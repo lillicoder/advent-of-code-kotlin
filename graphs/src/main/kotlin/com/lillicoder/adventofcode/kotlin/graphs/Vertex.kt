@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.graphs
+package com.lillicoder.adventofcode.kotlin.graphs
 
 /**
  * A single vertex of a [Graph].

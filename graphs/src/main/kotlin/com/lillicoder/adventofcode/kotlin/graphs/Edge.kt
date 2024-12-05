@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.graphs
+package com.lillicoder.adventofcode.kotlin.graphs
 
-import com.lillicoder.adventofcode.math.UnorderedPair
+import com.lillicoder.adventofcode.kotlin.math.UnorderedPair
 import java.util.Objects
 
 /**

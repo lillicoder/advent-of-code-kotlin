@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.io
+package com.lillicoder.adventofcode.kotlin.io
 
 /**
  * Splits this string with the given delimiter then maps each substring

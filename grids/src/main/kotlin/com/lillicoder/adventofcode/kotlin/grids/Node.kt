@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.math
+package com.lillicoder.adventofcode.kotlin.grids
 
 /**
- * Represents a direction in two dimensions.
+ * A single element of a [Grid].
  */
-enum class Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    UNKNOWN,
-}
+data class Node<T>(
+    val x: Long,
+    val y: Long,
+    val value: T,
+)

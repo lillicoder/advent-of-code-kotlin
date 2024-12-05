@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.grids
+package com.lillicoder.adventofcode.kotlin.grids
 
 /**
  * Represents a method of traversal for a [Grid].

@@ -1,5 +1,5 @@
-## Advent of Code Utilities
+## Advent of Code for Kotlin
 
 ### Useful tools in Kotlin by [lillicoder](https://www.github.com/lillicoder)
 
-Library of helpful data structures and algorithm implementations when Working on the Advent of Code. All work done in Kotlin. Builds powered by Gradle.
+Kotlin library of data structures and algorithms for use with Advent of Code puzzles. All work done in Kotlin. Builds powered by Gradle.

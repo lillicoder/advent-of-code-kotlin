@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.graphs
+package com.lillicoder.adventofcode.kotlin.graphs
 
 /**
  * [Graph](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) interface.

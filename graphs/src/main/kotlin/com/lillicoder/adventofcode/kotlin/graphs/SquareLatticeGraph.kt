@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.graphs
+package com.lillicoder.adventofcode.kotlin.graphs
 
-import com.lillicoder.adventofcode.math.Coordinates
-import com.lillicoder.adventofcode.math.Direction
+import com.lillicoder.adventofcode.kotlin.math.Coordinates
+import com.lillicoder.adventofcode.kotlin.math.Direction
 
 /**
  * [Graph] in which all vertices form a square lattice.

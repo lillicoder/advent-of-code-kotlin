@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.graphs
+package com.lillicoder.adventofcode.kotlin.graphs
 
-import com.lillicoder.adventofcode.io.splitMapNotEmpty
-import com.lillicoder.adventofcode.math.to
+import com.lillicoder.adventofcode.kotlin.io.splitMapNotEmpty
+import com.lillicoder.adventofcode.kotlin.math.to
 
 /**
  * Converts this string to a [SquareLatticeGraph]. Each character in each string is considered

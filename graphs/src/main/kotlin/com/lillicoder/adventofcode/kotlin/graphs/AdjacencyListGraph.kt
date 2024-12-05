@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.graphs
+package com.lillicoder.adventofcode.kotlin.graphs
 
 /**
  * [Adjacency list](https://en.wikipedia.org/wiki/Adjacency_list) implementation of a [Graph].

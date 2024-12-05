@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.math
+package com.lillicoder.adventofcode.kotlin.math
 
 import kotlin.math.max
 

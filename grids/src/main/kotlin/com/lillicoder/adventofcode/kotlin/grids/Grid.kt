@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.grids
+package com.lillicoder.adventofcode.kotlin.grids
 
-import com.lillicoder.adventofcode.io.Resources
-import com.lillicoder.adventofcode.io.splitMapNotEmpty
-import com.lillicoder.adventofcode.math.Direction
+import com.lillicoder.adventofcode.kotlin.io.Resources
+import com.lillicoder.adventofcode.kotlin.io.splitMapNotEmpty
+import com.lillicoder.adventofcode.kotlin.math.Direction
 import kotlin.math.abs
 
 /**
