@@ -16,6 +16,8 @@
 
 package com.lillicoder.adventofcode.kotlin.graphs
 
+import com.lillicoder.adventofcode.kotlin.math.Vertex
+
 /**
  * [Graph](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) interface.
  */

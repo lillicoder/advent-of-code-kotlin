@@ -17,6 +17,7 @@
 package com.lillicoder.adventofcode.kotlin.graphs
 
 import com.lillicoder.adventofcode.kotlin.io.splitMapNotEmpty
+import com.lillicoder.adventofcode.kotlin.math.Vertex
 import com.lillicoder.adventofcode.kotlin.math.to
 
 /**

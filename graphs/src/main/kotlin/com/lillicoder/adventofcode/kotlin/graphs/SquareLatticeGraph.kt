@@ -16,34 +16,28 @@
 
 package com.lillicoder.adventofcode.kotlin.graphs
 
+import com.lillicoder.adventofcode.kotlin.grids.Grid
 import com.lillicoder.adventofcode.kotlin.math.Coordinates
 import com.lillicoder.adventofcode.kotlin.math.Direction
+import com.lillicoder.adventofcode.kotlin.math.Vertex
 
 /**
  * [Graph] in which all vertices form a square lattice.
  * @param graph Internal [Graph] containing each [Vertex] and [Edge].
- * @param coordinatesByVertex Each [Vertex] mapped to its Cartesian coordinates.
- * @param vertexByCoordinates Each Cartesian coordinate mapped to its vertex.
+ * @param grid Internal [Grid] containing each vertex and [Coordinates].
  */
 class SquareLatticeGraph<T>(
     private val graph: Graph<T>,
-    private val coordinatesByVertex: Map<Vertex<T>, Coordinates>,
-    private val vertexByCoordinates: Map<Coordinates, Vertex<T>>,
-    private val columns: Map<Long, List<Vertex<T>>> =
-        vertexByCoordinates.keys.groupBy(Coordinates::x).mapValues { entry ->
-            entry.value.map { vertexByCoordinates[it]!! }
-        },
-    private val rows: Map<Long, List<Vertex<T>>> =
-        vertexByCoordinates.keys.groupBy(Coordinates::y).mapValues { entry ->
-            entry.value.map { vertexByCoordinates[it]!! }
-        },
-    val height: Int = rows.size,
-    val width: Int = columns.size,
+    private val grid: Grid<T>,
+    val height: Int = grid.height,
+    val width: Int = grid.width,
 ) : Graph<T> by graph {
     private constructor(builder: Builder<T>) : this(
         AdjacencyListGraph(builder),
-        builder.coordinatesByVertex,
-        builder.vertexByCoordinates,
+        Grid(
+            builder.coordinatesByVertex,
+            builder.vertexByCoordinates,
+        ),
     )
 
     /**
@@ -51,21 +45,21 @@ class SquareLatticeGraph<T>(
      * @param index Column index.
      * @return Column or null if there is no column for the given index.
      */
-    fun column(index: Int) = columns[index.toLong()]
+    fun column(index: Int) = grid.column(index)
 
     /**
      * Gets each column of [Vertex] in this graph in index order.
      * Vertices in each column are in row index order.
      * @return Rows.
      */
-    fun columns() = columns.map { it.value }
+    fun columns() = grid.columns()
 
     /**
      * Gets the [Coordinates] for the given [Vertex].
      * @param vertex Vertex.
      * @Return Coordinates or null if there are no coordinates for the given vertex.
      */
-    fun coordinates(vertex: Vertex<T>) = coordinatesByVertex[vertex]
+    fun coordinates(vertex: Vertex<T>) = grid.coordinates(vertex)
 
     /**
      * Determines the [Direction] from the given source [Vertex] to the given destination vertex.
@@ -77,15 +71,7 @@ class SquareLatticeGraph<T>(
     fun direction(
         source: Vertex<T>,
         destination: Vertex<T>,
-    ) = coordinatesByVertex[source]?.let {
-        when (coordinatesByVertex[destination]) {
-            it.left() -> Direction.LEFT
-            it.right() -> Direction.RIGHT
-            it.down() -> Direction.DOWN
-            it.up() -> Direction.UP
-            else -> Direction.UNKNOWN
-        }
-    } ?: Direction.UNKNOWN
+    ) = grid.direction(source, destination)
 
     /**
      * Gets the [Vertex] neighboring the given vertex in the given direction.
@@ -96,28 +82,23 @@ class SquareLatticeGraph<T>(
     fun neighbor(
         vertex: Vertex<T>,
         direction: Direction,
-    ) = vertexByCoordinates[coordinatesByVertex[vertex]?.shift(direction)]
+    ) = grid.neighbor(vertex, direction)
 
     /**
      * Gets the row of [Vertex] for the given row index.
      * @param index Row index.
      * @return Row or null if there is no row for the given index.
      */
-    fun row(index: Int) = rows[index.toLong()]
+    fun row(index: Int) = grid.row(index)
 
     /**
      * Gets each row of [Vertex] in this graph in index order.
      * Vertices in each row are in column index order.
      * @return Rows.
      */
-    fun rows() = rows.map { it.value }
+    fun rows() = grid.rows()
 
-    override fun toString() =
-        rows.values.joinToString(System.lineSeparator()) { row ->
-            row.joinToString("") {
-                it.value.toString()
-            }
-        }
+    override fun toString() = grid.toString()
 
     /**
      * [Graph.Builder] for [SquareLatticeGraph] instances.

@@ -16,8 +16,12 @@
 
 package com.lillicoder.adventofcode.kotlin.graphs
 
+import com.lillicoder.adventofcode.kotlin.math.Vertex
+
 /**
  * [Adjacency list](https://en.wikipedia.org/wiki/Adjacency_list) implementation of a [Graph].
+ * @param vertices Each [Edge] mapped to its starting [Vertex].
+ * @param edges All edges for all vertices.
  */
 class AdjacencyListGraph<T>(
     private val vertices: Map<Vertex<T>, Set<Edge<T>>>,

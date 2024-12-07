@@ -17,6 +17,7 @@
 package com.lillicoder.adventofcode.kotlin.graphs
 
 import com.lillicoder.adventofcode.kotlin.math.UnorderedPair
+import com.lillicoder.adventofcode.kotlin.math.Vertex
 import java.util.Objects
 
 /**

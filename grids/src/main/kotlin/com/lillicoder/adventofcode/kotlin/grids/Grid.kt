@@ -16,288 +16,129 @@
 
 package com.lillicoder.adventofcode.kotlin.grids
 
-import com.lillicoder.adventofcode.kotlin.io.Resources
-import com.lillicoder.adventofcode.kotlin.io.splitMapNotEmpty
+import com.lillicoder.adventofcode.kotlin.math.Coordinates
 import com.lillicoder.adventofcode.kotlin.math.Direction
-import kotlin.math.abs
+import com.lillicoder.adventofcode.kotlin.math.Vertex
 
 /**
- * An arbitrary two-dimensional grid of [Node].
+ * A two-dimensional grid of [Vertex].
+ * @param coordinatesByVertex Each vertex mapped to its [Coordinates].
+ * @param vertexByCoordinates Each coordinate mapped to its vertex.
+ * @param columns Each column of vertices mapped to its column index.
+ * @param rows Each row of vertices mapped to its row index.
+ * @param height Grid height.
+ * @param width Grid width.
  */
-data class Grid<T>(
-    private val nodes: List<List<Node<T>>>,
-    val width: Int = nodes[0].size,
-    val height: Int = nodes.size,
+class Grid<T>(
+    private val coordinatesByVertex: Map<Vertex<T>, Coordinates>,
+    private val vertexByCoordinates: Map<Coordinates, Vertex<T>>,
+    private val columns: Map<Long, List<Vertex<T>>> =
+        vertexByCoordinates.keys.groupBy(Coordinates::x).mapValues { entry ->
+            entry.value.map { vertexByCoordinates[it]!! }
+        },
+    private val rows: Map<Long, List<Vertex<T>>> =
+        vertexByCoordinates.keys.groupBy(Coordinates::y).mapValues { entry ->
+            entry.value.map { vertexByCoordinates[it]!! }
+        },
+    val height: Int = rows.size,
+    val width: Int = columns.size,
 ) {
-    companion object {
-        /**
-         * Creates a new [Grid] from the given list of strings. Each still
-         * will be considered as a row and each character in each string
-         * considered as a column.
-         */
-        fun create(raw: List<String>) = create(raw) { it.toString() }
-
-        /**
-         * Creates a new [Grid] from the given list of strings. Each string
-         * will be considered as a row and each character in each string
-         * considered as a column.
-         * @param raw Raw values.
-         * @return Grid.
-         */
-        fun <T> create(
-            raw: List<String>,
-            transform: (Char) -> T,
-        ) = Grid(
-            raw.mapIndexed { y, row ->
-                row.mapIndexed { x, node ->
-                    Node(x.toLong(), y.toLong(), transform(node))
-                }
-            },
-        )
-
-        /**
-         * Creates a new [Grid] by reading the resource with the given filename.
-         */
-        fun read(filename: String) = read(filename) { it.toString() }
-
-        /**
-         * Creates a new [Grid] by reading the resource with the given filename.
-         * @param filename Resource filename.
-         * @return Grid.
-         */
-        fun <T> read(
-            filename: String,
-            transform: (Char) -> T,
-        ) = readAll(
-            filename = filename,
-            transform = transform,
-        ).first()
-
-        /**
-         * Creates one or more [Grid] by reading the resource with the given filename.
-         * @param filename Resource filename.
-         * @param separator Line separator.
-         * @return Grids.
-         */
-        fun <T> readAll(
-            filename: String,
-            separator: String = System.lineSeparator(),
-            transform: (Char) -> T,
-        ): List<Grid<T>> {
-            val raw = Resources.text(filename) ?: throw IllegalArgumentException("Could not read input from file.")
-            return raw.splitMapNotEmpty("$separator$separator") { create(it.lines(), transform) }
-        }
-    }
-
     /**
-     * Gets the [Node] adjacent to the given node in the given [Direction].
-     * @param node Node.
-     * @param direction Direction.
-     * @return Adjacent node.
-     */
-    fun adjacent(
-        node: Node<T>,
-        direction: Direction,
-    ) = adjacent(node) { _, dir -> dir == direction }.firstOrNull()
-
-    /**
-     * Gets the list of [Node] adjacent to the given node that satisfy the given predicate.
-     * A node is considered adjacent if it is directly above, below, to the left of, or to the right of
-     * the given node.
-     * @param node Node.
-     * @param predicate Predicate to check. Defaults to matching all directions.
-     * @return Adjacent nodes.
-     */
-    fun adjacent(
-        node: Node<T>,
-        predicate: (Node<T>, Direction) -> Boolean = { _, _ -> true },
-    ) = listOfNotNull(
-        nodes.getOrNull(node.y.toInt())?.getOrNull(node.x.toInt() - 1)?.takeIf { predicate(it, Direction.LEFT) },
-        nodes.getOrNull(node.y.toInt() - 1)?.getOrNull(node.x.toInt())?.takeIf { predicate(it, Direction.UP) },
-        nodes.getOrNull(node.y.toInt() + 1)?.getOrNull(node.x.toInt())?.takeIf { predicate(it, Direction.DOWN) },
-        nodes.getOrNull(node.y.toInt())?.getOrNull(node.x.toInt() + 1)?.takeIf { predicate(it, Direction.RIGHT) },
-    )
-
-    /**
-     * Gets the column for this grid at the given index.
+     * Gets the column of [Vertex] for the given column index.
      * @param index Column index.
-     * @return Column nodes.
-     * @throws IndexOutOfBoundsException
+     * @return Column or null if there is no column for the given index.
      */
-    fun column(index: Int) =
-        nodes.map {
-            it[index]
+    fun column(index: Int) = columns[index.toLong()]
+
+    /**
+     * Gets each column of [Vertex] in this graph in index order.
+     * Vertices in each column are in row index order.
+     * @return Rows.
+     */
+    fun columns() = columns.map { it.value }
+
+    /**
+     * Gets the [Coordinates] for the given [Vertex].
+     * @param vertex Vertex.
+     * @Return Coordinates or null if there are no coordinates for the given vertex.
+     */
+    fun coordinates(vertex: Vertex<T>) = coordinatesByVertex[vertex]
+
+    /**
+     * Determines the [Direction] from the given source [Vertex] to the given destination vertex.
+     * @param source Source vertex.
+     * @param destination Destination vertex.
+     * @return Direction from source to destination or [Direction.UNKNOWN] if there is no
+     * direction between the two vertices.
+     */
+    fun direction(
+        source: Vertex<T>,
+        destination: Vertex<T>,
+    ) = coordinatesByVertex[source]?.let {
+        when (coordinatesByVertex[destination]) {
+            it.left() -> Direction.LEFT
+            it.right() -> Direction.RIGHT
+            it.down() -> Direction.DOWN
+            it.up() -> Direction.UP
+            else -> Direction.UNKNOWN
         }
+    } ?: Direction.UNKNOWN
 
     /**
-     * Counts the number of nodes per row matching the given predicate.
-     * @param predicate Predicate to check.
-     * @return Number of nodes per row satisfying the predicate.
-     */
-    fun countNodesByRow(predicate: (Node<T>) -> Boolean) = nodes.map { it.count(predicate) }
-
-    /**
-     * Gets the Manhattan distance between the given starting and ending nodes.
-     * @param start Start node.
-     * @param end End node.
-     * @return Manhattan distance.
+     * Gets the Manhattan distance between the given [Vertex].
+     * @param start Starting vertex.
+     * @param end Ending vertex.
+     * @return Manhattan distance or -1 if coordinates for either vertex could not be found.
      */
     fun distance(
-        start: Node<T>,
-        end: Node<T>,
-    ) = abs(start.x - end.x) + abs(start.y - end.y)
+        start: Vertex<T>,
+        end: Vertex<T>,
+    ) = coordinates(end)?.let {
+        coordinates(start)?.distance(it) ?: -1L
+    } ?: -1L
 
     /**
-     * Finds the first [Node] that satisfies the given predicate.
-     * @param predicate Predicate to check.
-     * @return Found node or null if no node satisfied the predicate.
+     * Gets the [Vertex] neighboring the given vertex in the given direction.
+     * @param vertex Vertex.
+     * @param direction Direction.
+     * @return Neighboring vertex or null if there is no neighbor in the given direction.
      */
-    fun find(predicate: (T) -> Boolean): Node<T>? {
-        nodes.forEach {
-            it.forEach { node ->
-                if (predicate.invoke(node.value)) return node
-            }
-        }
-
-        return null
-    }
+    fun neighbor(
+        vertex: Vertex<T>,
+        direction: Direction,
+    ) = vertexByCoordinates[coordinatesByVertex[vertex]?.shift(direction)]
 
     /**
-     * Gets the first [Node] for this grid. The first node is the one at position (0, 0).
-     * @return First node.
+     * Gets each [Vertex] neighboring the given vertex in each [Direction].
+     * @param vertex Vertex.
+     * @return Neighboring vertices.
      */
-    fun first() = nodes.first().first()
+    fun neighbors(vertex: Vertex<T>) =
+        listOfNotNull(
+            neighbor(vertex, Direction.LEFT),
+            neighbor(vertex, Direction.UP),
+            neighbor(vertex, Direction.DOWN),
+            neighbor(vertex, Direction.RIGHT),
+        )
 
     /**
-     * Performs the given action on each node in this grid.
-     * @param action Action to perform.
-     */
-    fun forEach(action: (Node<T>) -> Unit) =
-        nodes.forEach {
-            it.forEach { node ->
-                action(node)
-            }
-        }
-
-    /**
-     * Performs the given action on each column in this grid.
-     * @param action Action to perform.
-     */
-    fun forEachColumnIndexed(action: (Int, List<Node<T>>) -> Unit) {
-        for (index in 0..<width) {
-            action(index, column(index))
-        }
-    }
-
-    /**
-     * Performs the given action on each row in this grid.
-     * @param action Action to perform.
-     */
-    fun forEachRowIndexed(action: (Int, List<Node<T>>) -> Unit) =
-        nodes.forEachIndexed { index, node ->
-            action(index, node)
-        }
-
-    /**
-     * Filters all [Node] and returns a list of nodes matching the given predicate.
-     * @param predicate Predicate to check.
-     * @return Nodes matching predicate.
-     */
-    fun filter(predicate: (T) -> Boolean) =
-        nodes.flatMap { row ->
-            row.filter { predicate(it.value) }
-        }
-
-    /**
-     * Gets the last [Node] for this grid. The last node is the one at
-     * position ([width] - 1, [height] -1).
-     * @return Last node.
-     */
-    fun last() = nodes.last().last()
-
-    /**
-     * Returns a [Grid] containing the results of applying the given transform function
-     * to each node in this grid.
-     * @param transform Transform to apply.
-     * @return Mapped grid.
-     */
-    fun <R> map(transform: (Node<T>) -> Node<R>): Grid<R> {
-        val mapped =
-            nodes.map { row ->
-                row.map {
-                    transform(it)
-                }
-            }
-
-        return Grid(mapped)
-    }
-
-    fun Iterator<T>.find(predicate: (T) -> Boolean): T? {
-        for (element in this) if (predicate(element)) return element
-        return null
-    }
-
-    /**
-     * Returns a list containing the results of applying the given transform function
-     * to each column of nodes in this grid.
-     * @param transform Transform to apply.
-     * @return Mapped columns.
-     */
-    fun <R> mapColumns(transform: (List<Node<T>>) -> R): List<R> {
-        val transformed = mutableListOf<R>()
-        forEachColumnIndexed { _, column ->
-            transformed.add(transform(column))
-        }
-        return transformed
-    }
-
-    /**
-     * Returns a list containing the results of applying the given transform function
-     * to each row of nodes in this grid.
-     * @param transform Transform to apply.
-     * @return Mapped rows.
-     */
-    fun <R> mapRows(transform: (List<Node<T>>) -> R) = nodes.map(transform)
-
-    /**
-     * Gets the list of [Node] neighboring the given node. A node is considered a neighbor
-     * if it is adjacent to or diagonally touching the given node.
-     * @param node Node.
-     * @return Neighboring nodes.
-     */
-    fun neighbors(node: Node<T>) =
-        adjacent(node) +
-            listOfNotNull(
-                nodes.getOrNull(node.y.toInt() - 1)?.getOrNull(node.x.toInt() - 1),
-                nodes.getOrNull(node.y.toInt() + 1)?.getOrNull(node.x.toInt() - 1),
-                nodes.getOrNull(node.y.toInt() - 1)?.getOrNull(node.x.toInt() + 1),
-                nodes.getOrNull(node.y.toInt() + 1)?.getOrNull(node.x.toInt() + 1),
-            )
-
-    /**
-     * Gets the list of [Node] that form a path from this grid's first
-     * node to the given node.
-     * @param destination Destination value.
-     * @param traversal [Traversal] to use for pathfinding.
-     * @return Path or empty list if there is no path.
-     */
-    fun path(
-        destination: Node<T>,
-        traversal: Traversal<T> = BreadthFirstTraversal(this),
-    ) = traversal.path(destination)
-
-    /**
-     * Gets the row for this grid at the given index.
+     * Gets the row of [Vertex] for the given row index.
      * @param index Row index.
-     * @return Row nodes.
-     * @throws IndexOutOfBoundsException
+     * @return Row or null if there is no row for the given index.
      */
-    fun row(index: Int) = nodes[index]
+    fun row(index: Int) = rows[index.toLong()]
+
+    /**
+     * Gets each row of [Vertex] in this graph in index order.
+     * Vertices in each row are in column index order.
+     * @return Rows.
+     */
+    fun rows() = rows.map { it.value }
 
     override fun toString() =
-        nodes.joinToString("\n") {
-            it.joinToString("") { node ->
-                node.value.toString()
+        rows.values.joinToString(System.lineSeparator()) { row ->
+            row.joinToString("") {
+                it.value.toString()
             }
         }
 }

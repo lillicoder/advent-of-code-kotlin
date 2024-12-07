@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.kotlin.grids
+package com.lillicoder.adventofcode.kotlin.math
 
 /**
- * A single element of a [Grid].
+ * Represents a single vertex of a graph.
+ * @param id ID.
+ * @param value Value.
  */
-data class Node<T>(
-    val x: Long,
-    val y: Long,
+data class Vertex<T>(
+    val id: Long,
     val value: T,
-)
+) {
+    override fun equals(other: Any?) = (other is Vertex<*>) && id == other.id
+
+    override fun hashCode() = id.hashCode()
+}

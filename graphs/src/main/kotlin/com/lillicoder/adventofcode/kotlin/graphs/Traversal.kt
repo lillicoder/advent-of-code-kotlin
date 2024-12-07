@@ -16,6 +16,8 @@
 
 package com.lillicoder.adventofcode.kotlin.graphs
 
+import com.lillicoder.adventofcode.kotlin.math.Vertex
+
 /**
  * Represents a method of traversal for a [Graph].
  */
@@ -38,7 +40,7 @@ interface Traversal<T> : Iterator<Vertex<T>> {
     }
 
     /**
-     * Gets the list of [Vertex] traversed to reach the given vetex.
+     * Gets the list of [Vertex] traversed to reach the given vertex.
      * @param destination Destination.
      * @return Path taken.
      */
