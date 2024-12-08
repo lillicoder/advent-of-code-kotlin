@@ -32,14 +32,6 @@ class SquareLatticeGraph<T>(
     val height: Int = grid.height,
     val width: Int = grid.width,
 ) : Graph<T> by graph {
-    private constructor(builder: Builder<T>) : this(
-        AdjacencyListGraph(builder),
-        Grid(
-            builder.coordinatesByVertex,
-            builder.vertexByCoordinates,
-        ),
-    )
-
     /**
      * Gets the column of [Vertex] for the given column index.
      * @param index Column index.
@@ -102,14 +94,10 @@ class SquareLatticeGraph<T>(
 
     /**
      * [Graph.Builder] for [SquareLatticeGraph] instances.
-     * @param coordinatesByVertex Each [Vertex] mapped to its Cartesian coordinates.
-     * @param vertexByCoordinates Each Cartesian coordinate mapped to its vertex.
+     * @param builder [Grid.Builder] for building structure.
      */
-    class Builder<T>(
-        internal val coordinatesByVertex: MutableMap<Vertex<T>, Coordinates> = mutableMapOf(),
-        internal val vertexByCoordinates: MutableMap<Coordinates, Vertex<T>> = mutableMapOf(),
-    ) : Graph.Builder<T>() {
-        override fun build() = build(false)
+    class Builder<T>(private val builder: Grid.Builder<T> = Grid.Builder()) : Graph.Builder<T>() {
+        override fun build() = build(allowDiagonals = false)
 
         /**
          * Creates a new [SquareLatticeGraph] from this builder.
@@ -118,16 +106,21 @@ class SquareLatticeGraph<T>(
          * @return Graph.
          */
         fun build(
+            grid: Grid<T> = builder.build(),
             allowDiagonals: Boolean = false,
             weight: (Vertex<T>, Vertex<T>) -> Long = { _, _ -> 1L },
-        ) = vertices.keys.forEach {
+        ) = vertices.keys.forEach { vertex ->
             connectToNeighbors(
-                it,
+                vertex,
+                grid,
                 allowDiagonals,
                 weight,
             )
         }.let {
-            SquareLatticeGraph(this)
+            SquareLatticeGraph(
+                AdjacencyListGraph(this),
+                grid,
+            )
         }
 
         /**
@@ -141,8 +134,7 @@ class SquareLatticeGraph<T>(
             element: T,
         ) = apply {
             vertex(element) {
-                coordinatesByVertex[it] = coordinates
-                vertexByCoordinates[coordinates] = it
+                builder.vertex(coordinates, it)
             }
         }
 
@@ -155,19 +147,20 @@ class SquareLatticeGraph<T>(
          */
         private fun connectToNeighbors(
             vertex: Vertex<T>,
+            grid: Grid<T>,
             allowDiagonals: Boolean,
             weight: (Vertex<T>, Vertex<T>) -> Long,
         ) {
-            coordinatesByVertex[vertex]?.apply {
+            grid.coordinates(vertex)?.apply {
                 listOfNotNull(
-                    vertexByCoordinates[left()],
-                    vertexByCoordinates[right()],
-                    vertexByCoordinates[up()],
-                    vertexByCoordinates[down()],
-                    if (allowDiagonals) vertexByCoordinates[leftUp()] else null,
-                    if (allowDiagonals) vertexByCoordinates[rightUp()] else null,
-                    if (allowDiagonals) vertexByCoordinates[leftDown()] else null,
-                    if (allowDiagonals) vertexByCoordinates[rightDown()] else null,
+                    grid.neighbor(vertex, Direction.LEFT),
+                    grid.neighbor(vertex, Direction.RIGHT),
+                    grid.neighbor(vertex, Direction.UP),
+                    grid.neighbor(vertex, Direction.DOWN),
+                    if (allowDiagonals) grid.neighbor(vertex, Direction.LEFT_UP) else null,
+                    if (allowDiagonals) grid.neighbor(vertex, Direction.RIGHT_UP) else null,
+                    if (allowDiagonals) grid.neighbor(vertex, Direction.RIGHT_DOWN) else null,
+                    if (allowDiagonals) grid.neighbor(vertex, Direction.LEFT_DOWN) else null,
                 ).forEach {
                     edge(
                         source = vertex,

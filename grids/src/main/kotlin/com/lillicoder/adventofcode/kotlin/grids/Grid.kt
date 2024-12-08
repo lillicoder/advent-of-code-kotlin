@@ -43,6 +43,11 @@ class Grid<T>(
     val height: Int = rows.size,
     val width: Int = columns.size,
 ) {
+    private constructor(builder: Builder<T>) : this(
+        builder.coordinatesByVertex,
+        builder.vertexByCoordinates,
+    )
+
     /**
      * Gets the column of [Vertex] for the given column index.
      * @param index Column index.
@@ -141,4 +146,35 @@ class Grid<T>(
                 it.value.toString()
             }
         }
+
+    /**
+     * Builder for [Grid] instances.
+     * @param coordinatesByVertex Each [Coordinates] keyed by its [Vertex].
+     * @param vertexByCoordinates Each vertex keyed by its coordinates.
+     */
+    class Builder<T>(
+        internal val coordinatesByVertex: MutableMap<Vertex<T>, Coordinates> = mutableMapOf(),
+        internal val vertexByCoordinates: MutableMap<Coordinates, Vertex<T>> = mutableMapOf(),
+    ) {
+        fun build() = Grid(this)
+
+        fun vertex(
+            coordinates: Coordinates,
+            element: T,
+        ) = vertex(
+            coordinates,
+            Vertex(
+                coordinatesByVertex.size.toLong(),
+                element,
+            ),
+        )
+
+        fun vertex(
+            coordinates: Coordinates,
+            vertex: Vertex<T>,
+        ) = apply {
+            coordinatesByVertex[vertex] = coordinates
+            vertexByCoordinates[coordinates] = vertex
+        }
+    }
 }

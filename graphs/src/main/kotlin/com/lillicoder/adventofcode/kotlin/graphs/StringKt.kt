@@ -21,7 +21,7 @@ import com.lillicoder.adventofcode.kotlin.math.Vertex
 import com.lillicoder.adventofcode.kotlin.math.to
 
 /**
- * Converts this string to a [SquareLatticeGraph]. Each character in each string is considered
+ * Converts this string to a [SquareLatticeGraph]. Each character in each line is considered
  * a vertex. Each vertex is connected to the vertices adjacent to it in each cardinal direction.
  * @param allowDiagonals True to also connect diagonally adjacent vertices with edges.
  * @return Graph.
@@ -33,7 +33,7 @@ fun String.gridToGraph(allowDiagonals: Boolean = false) =
     )
 
 /**
- * Converts this string to a [SquareLatticeGraph]. Each character in each string is considered
+ * Converts this string to a [SquareLatticeGraph]. Each character in each line is considered
  * a vertex. Each vertex is connected to the vertices adjacent to it in each cardinal direction.
  * @param allowDiagonals True to also connect diagonally adjacent vertices with edges.
  * @param transform Transform to apply to each character in the grid when creating vertices.
@@ -47,14 +47,16 @@ fun <T> String.gridToGraph(
 ): SquareLatticeGraph<T> {
     val builder = SquareLatticeGraph.Builder<T>()
 
-    val rows = lines()
-    rows.forEachIndexed { y, row ->
+    lines().forEachIndexed { y, row ->
         row.forEachIndexed { x, node ->
             builder.vertex(x.to(y), transform(node))
         }
     }
 
-    return builder.build(allowDiagonals, weight)
+    return builder.build(
+        allowDiagonals = allowDiagonals,
+        weight = weight,
+    )
 }
 
 /**

@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.kotlin.math
+package com.lillicoder.adventofcode.kotlin.grids
+
+import com.lillicoder.adventofcode.kotlin.math.to
 
 /**
- * Represents a direction in two dimensions.
+ * Converts this string to a [Grid]. Each character in each line
+ * is considered a vertex.
  */
-enum class Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    LEFT_UP,
-    RIGHT_UP,
-    RIGHT_DOWN,
-    LEFT_DOWN,
-    UNKNOWN,
+fun <T> String.toGrid(transform: (Char) -> T): Grid<T> {
+    val builder = Grid.Builder<T>()
+
+    lines().forEachIndexed { y, row ->
+        row.forEachIndexed { x, vertex ->
+            builder.vertex(x.to(y), transform(vertex))
+        }
+    }
+
+    return builder.build()
 }

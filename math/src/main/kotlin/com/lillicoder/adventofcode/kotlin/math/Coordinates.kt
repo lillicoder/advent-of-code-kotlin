@@ -95,6 +95,10 @@ data class Coordinates(
             Direction.DOWN -> down()
             Direction.LEFT -> left()
             Direction.RIGHT -> right()
+            Direction.LEFT_UP -> leftUp()
+            Direction.RIGHT_UP -> rightUp()
+            Direction.RIGHT_DOWN -> rightDown()
+            Direction.LEFT_DOWN -> leftDown()
             Direction.UNKNOWN -> this
         }
 
