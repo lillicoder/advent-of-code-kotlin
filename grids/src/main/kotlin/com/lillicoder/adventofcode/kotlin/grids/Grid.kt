@@ -42,11 +42,28 @@ class Grid<T>(
         },
     val height: Int = rows.size,
     val width: Int = columns.size,
-) {
+) : Iterable<Vertex<T>> {
     private constructor(builder: Builder<T>) : this(
         builder.coordinatesByVertex,
         builder.vertexByCoordinates,
     )
+
+    override fun iterator() =
+        object : Iterator<Vertex<T>> {
+            private var rows = rows().iterator()
+            private var columns = rows.next().iterator()
+
+            override fun hasNext() = columns.hasNext() || rows.hasNext()
+
+            override fun next() =
+                when (columns.hasNext()) {
+                    true -> columns.next()
+                    else -> {
+                        columns = rows.next().iterator()
+                        columns.next()
+                    }
+                }
+        }
 
     /**
      * Gets the column of [Vertex] for the given column index.
