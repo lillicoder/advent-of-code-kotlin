@@ -48,8 +48,6 @@ class AdjacencyListGraph<T>(
             if (vertex == it.source) it.destination else it.source
         }?.toSet() ?: setOf()
 
-    override fun next(vertex: Vertex<T>) = vertex(vertex.id.inc())
-
     override fun root() = vertices.keys.first()
 
     override fun size() = vertices.keys.size

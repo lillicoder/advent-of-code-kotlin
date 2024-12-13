@@ -22,7 +22,19 @@ import com.lillicoder.adventofcode.kotlin.math.Vertex
  * [Graph](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)) interface.
  */
 interface Graph<T> : Iterable<Vertex<T>> {
-    override fun iterator() = InsertOrderTraversal(this)
+    override fun iterator() =
+        object : Iterator<Vertex<T>> {
+            private val queue = ArrayDeque<Vertex<T>>().also { it.add(root()) }
+            private val visited = linkedMapOf(root() to true)
+
+            override fun hasNext() = queue.isNotEmpty()
+
+            override fun next() =
+                queue.removeFirst().also { next ->
+                    visited[next] = true
+                    vertex(next.id.inc())?.let { queue.add(it) }
+                }
+        }
 
     /**
      * Determines if there is an edge between the two given [Vertex].
@@ -53,27 +65,6 @@ interface Graph<T> : Iterable<Vertex<T>> {
      * @return Neighbors.
      */
     fun neighbors(vertex: Vertex<T>): Set<Vertex<T>>
-
-    /**
-     * Gets the [Vertex] that was inserted after the given vertex.
-     * @param vertex Vertex.
-     * @return Next vertex or null if the given vertex was the last one inserted.
-     */
-    fun next(vertex: Vertex<T>): Vertex<T>?
-
-    /**
-     * Gets the path from the given start [Vertex] to the given
-     * destination [Vertex] using the given [Traversal].
-     * @param start Starting vertex.
-     * @param destination Destination vertex.
-     * @param traversal Traversal to use.
-     * @return Path from start to destination or an empty list if there is no such path.
-     */
-    fun path(
-        start: Vertex<T>,
-        destination: Vertex<T>,
-        traversal: Traversal<T> = BreadthFirstTraversal(this, start),
-    ) = traversal.path(destination)
 
     /**
      * Gets the first [Vertex] added to this graph.

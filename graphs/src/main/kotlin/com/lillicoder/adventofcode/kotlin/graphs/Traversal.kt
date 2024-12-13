@@ -21,18 +21,129 @@ import com.lillicoder.adventofcode.kotlin.math.Vertex
 /**
  * Represents a method of traversal for a [Graph].
  */
-interface Traversal<T> : Iterator<Vertex<T>> {
+interface Traversal<T> {
     /**
-     * Gets the path from the first [Vertex]
+     * Gets the path from the given start [Vertex]
      * to the given destination vertex.
      * @param destination Destination.
-     * @return Path taken or an empty list if there is no path to the given vertex.
+     * @return Path taken or an empty list if there is no path between the given vertices.
      */
-    fun path(destination: Vertex<T>): List<Vertex<T>> {
-        while (hasNext()) {
-            val node = next()
-            if (node == destination) {
-                return pathTaken(destination)
+    fun path(
+        start: Vertex<T>,
+        destination: Vertex<T>,
+    ): List<Vertex<T>>
+}
+
+/**
+ * Breadth-first [Traversal] of a given [Graph].
+ * @param graph Graph to traverse.
+ */
+class BreadthFirstTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
+    private val queue = ArrayDeque<Vertex<T>>()
+    private val visited = linkedMapOf<Vertex<T>, Boolean>()
+
+    override fun path(
+        start: Vertex<T>,
+        destination: Vertex<T>,
+    ): List<Vertex<T>> {
+        queue.add(start)
+        visited[start] = true
+
+        while (queue.isNotEmpty()) {
+            val next = queue.removeFirst()
+            if (next == destination) {
+                visited[next] = true
+                return visited.keys.toList()
+            }
+
+            graph.neighbors(next).forEach {
+                if (!visited.contains(it)) {
+                    visited[it] = true
+                    queue.add(it)
+                }
+            }
+        }
+
+        return emptyList()
+    }
+}
+
+/**
+ * Depth-first [Traversal] of a given [Graph].
+ * @param graph Graph to traverse.
+ */
+class DepthFirstTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
+    private val stack = ArrayDeque<Vertex<T>>()
+    private val visited = linkedMapOf<Vertex<T>, Boolean>()
+
+    override fun path(
+        start: Vertex<T>,
+        destination: Vertex<T>,
+    ): List<Vertex<T>> {
+        stack.add(start)
+
+        while (stack.isNotEmpty()) {
+            val next = stack.removeFirst()
+            if (destination == next) {
+                visited[next] = true
+                return visited.keys.toList()
+            }
+
+            if (!visited.contains(next)) {
+                visited[next] = true
+                graph.neighbors(next).forEach {
+                    if (!visited.contains(it) && !stack.contains(it)) {
+                        stack.addFirst(it)
+                    }
+                }
+            }
+        }
+
+        return emptyList()
+    }
+}
+
+/**
+ * Dijkstra [Traversal] of a given [Graph].
+ * @param graph Graph to traverse.
+ */
+class DijkstraTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
+    private val distances = mutableMapOf<Vertex<T>, Long>().withDefault { Long.MAX_VALUE }
+    private val predecessors = mutableMapOf<Vertex<T>, Vertex<T>>()
+
+    private val processed = mutableSetOf<Vertex<T>>()
+    private val frontier = mutableSetOf<Vertex<T>>()
+
+    override fun path(
+        start: Vertex<T>,
+        destination: Vertex<T>,
+    ): List<Vertex<T>> {
+        distances[start] = 0L
+        frontier.add(start)
+
+        while (frontier.isNotEmpty()) {
+            val current =
+                frontier.minBy {
+                    distances.getValue(it)
+                }.also {
+                    frontier.remove(it)
+                    processed.add(it)
+                }
+            if (current == destination) return unwind(current)
+
+            graph.neighbors(current).filterNot {
+                processed.contains(it)
+            }.forEach { neighbor ->
+                val weight = graph.edge(current, neighbor)?.weight ?: 0L
+                val candidate = distances.getValue(current) + weight
+                if (candidate < distances.getValue(neighbor)) {
+                    // Better distance, update distance and path
+                    distances[neighbor] = candidate
+                    predecessors[neighbor] = current
+                }
+
+                // Mark as unprocessed
+                frontier.add(neighbor)
             }
         }
 
@@ -40,144 +151,19 @@ interface Traversal<T> : Iterator<Vertex<T>> {
     }
 
     /**
-     * Gets the list of [Vertex] traversed to reach the given vertex.
+     * Builds the path taken to reach the given destination [Vertex].
      * @param destination Destination.
-     * @return Path taken.
+     * @return Path.
      */
-    fun pathTaken(destination: Vertex<T>): List<Vertex<T>>
-}
-
-/**
- * Breadth-first [Traversal] of a given [Graph].
- * @param graph [Graph] to traverse.
- * @param root Starting node.
- */
-class BreadthFirstTraversal<T>(
-    private val graph: Graph<T>,
-    private val root: Vertex<T> = graph.root(),
-) : Traversal<T> {
-    private val queue = ArrayDeque<Vertex<T>>().also { it.add(root) }
-    private val visited = linkedMapOf(root to true)
-
-    override fun hasNext() = queue.isNotEmpty()
-
-    override fun next(): Vertex<T> {
-        val next = queue.removeFirst()
-        graph.neighbors(next).forEach {
-            if (!visited.contains(it)) {
-                visited[it] = true
-                queue.add(it)
-            }
-        }
-
-        return next
-    }
-
-    override fun pathTaken(destination: Vertex<T>) = visited.keys.toList()
-}
-
-/**
- * Depth-first [Traversal] of a given [Graph].
- * @param graph [Graph] to traverse.
- * @param root Starting node.
- */
-class DepthFirstTraversal<T>(
-    private val graph: Graph<T>,
-    private val root: Vertex<T> = graph.root(),
-) : Traversal<T> {
-    private val stack = ArrayDeque(listOf(root))
-    private val visited = linkedMapOf<Vertex<T>, Boolean>()
-
-    override fun hasNext() = stack.isNotEmpty()
-
-    override fun next(): Vertex<T> {
-        val next = stack.removeFirst()
-        if (!visited.contains(next)) {
-            visited[next] = true
-            graph.neighbors(next).forEach {
-                if (!visited.contains(it) && !stack.contains(it)) {
-                    stack.addFirst(it)
-                }
-            }
-        }
-
-        return next
-    }
-
-    override fun pathTaken(destination: Vertex<T>) = visited.keys.toList()
-}
-
-class DijkstraTraversal<T>(
-    private val graph: Graph<T>,
-    private val root: Vertex<T> = graph.root(),
-) : Traversal<T> {
-    private val distances = mutableMapOf(root to 0L).withDefault { Long.MAX_VALUE }
-    private val predcessors = mutableMapOf<Vertex<T>, Vertex<T>?>(root to null)
-
-    private val processed = mutableSetOf<Vertex<T>>()
-    private val frontier = mutableSetOf(root)
-
-    override fun hasNext() = frontier.isNotEmpty()
-
-    override fun next(): Vertex<T> {
-        val current =
-            frontier.minBy {
-                distances.getValue(it)
-            }.also {
-                frontier.remove(it)
-                processed.add(it)
-            }
-
-        graph.neighbors(current).filterNot {
-            processed.contains(it)
-        }.forEach { neighbor ->
-            val weight = graph.edge(current, neighbor)?.weight ?: 0L
-            val candidate = distances.getValue(current) + weight
-            if (candidate < distances.getValue(neighbor)) {
-                // Better distance, update distance and path
-                distances[neighbor] = candidate
-                predcessors[neighbor] = current
-            }
-
-            // Mark as unprocessed
-            frontier.add(neighbor)
-        }
-
-        return current
-    }
-
-    override fun pathTaken(destination: Vertex<T>): List<Vertex<T>> {
+    private fun unwind(destination: Vertex<T>): List<Vertex<T>> {
         val path = mutableListOf<Vertex<T>>()
 
-        var previous = predcessors[destination]
+        var previous = predecessors.getOrElse(destination) { null }
         while (previous != null) {
             path.add(previous)
-            previous = predcessors[previous]
+            previous = predecessors[previous]
         }
 
-        return path
+        return path.reversed()
     }
-}
-
-/**
- * Insertion order [Traversal] of a given [Graph].
- * @param graph [Graph] to traverse.
- * @param root Starting node.
- */
-class InsertOrderTraversal<T>(
-    private val graph: Graph<T>,
-    private val root: Vertex<T> = graph.root(),
-) : Traversal<T> {
-    private val queue = ArrayDeque<Vertex<T>>().also { it.add(root) }
-    private val visited = linkedMapOf(root to true)
-
-    override fun hasNext() = queue.isNotEmpty()
-
-    override fun next(): Vertex<T> =
-        queue.removeFirst().also { next ->
-            visited[next] = true
-            graph.next(next)?.let { queue.add(it) }
-        }
-
-    override fun pathTaken(destination: Vertex<T>) = visited.keys.toList()
 }
