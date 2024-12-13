@@ -16,9 +16,11 @@
 
 package com.lillicoder.adventofcode.kotlin.grids
 
+import com.lillicoder.adventofcode.kotlin.grids.Grid.Builder
 import com.lillicoder.adventofcode.kotlin.math.Coordinates
 import com.lillicoder.adventofcode.kotlin.math.Direction
 import com.lillicoder.adventofcode.kotlin.math.Vertex
+import com.lillicoder.adventofcode.kotlin.math.to
 
 /**
  * A two-dimensional grid of [Vertex].
@@ -43,11 +45,6 @@ class Grid<T>(
     val height: Int = rows.size,
     val width: Int = columns.size,
 ) : Iterable<Vertex<T>> {
-    private constructor(builder: Builder<T>) : this(
-        builder.coordinatesByVertex,
-        builder.vertexByCoordinates,
-    )
-
     override fun iterator() =
         object : Iterator<Vertex<T>> {
             private var rows = rows().iterator()
@@ -166,32 +163,91 @@ class Grid<T>(
 
     /**
      * Builder for [Grid] instances.
-     * @param coordinatesByVertex Each [Coordinates] keyed by its [Vertex].
-     * @param vertexByCoordinates Each vertex keyed by its coordinates.
+     * @param rows Rows of the grid.
      */
     class Builder<T>(
-        internal val coordinatesByVertex: MutableMap<Vertex<T>, Coordinates> = mutableMapOf(),
-        internal val vertexByCoordinates: MutableMap<Coordinates, Vertex<T>> = mutableMapOf(),
+        private val rows: MutableList<Row<T>> = mutableListOf(),
     ) {
-        fun build() = Grid(this)
+        /**
+         * Represents a single row of elements in a grid.
+         * @param vertices Vertices.
+         */
+        class Row<T>(
+            private val vertices: MutableList<T> = mutableListOf(),
+        ) : Iterable<T> {
+            override fun iterator() = vertices.iterator()
 
-        fun vertex(
-            coordinates: Coordinates,
-            element: T,
-        ) = vertex(
-            coordinates,
-            Vertex(
-                coordinatesByVertex.size.toLong(),
-                element,
-            ),
-        )
+            /**
+             * Adds a vertex to the end of this row with the given value.
+             * @param element Value.
+             */
+            fun vertex(element: T) = vertices.add(element)
+        }
 
-        fun vertex(
-            coordinates: Coordinates,
-            vertex: Vertex<T>,
-        ) = apply {
-            coordinatesByVertex[vertex] = coordinates
-            vertexByCoordinates[coordinates] = vertex
+        /**
+         * Instantiates a new [Grid] from this builder.
+         * @return Grid.
+         */
+        fun build(): Grid<T> {
+            val coordinatesByVertex = mutableMapOf<Vertex<T>, Coordinates>()
+            val vertexByCoordinates = mutableMapOf<Coordinates, Vertex<T>>()
+
+            rows.forEachIndexed { y, row ->
+                row.forEachIndexed { x, element ->
+                    val coordinates = x.to(y)
+                    val vertex = Vertex(coordinatesByVertex.size.toLong(), element)
+                    coordinatesByVertex[vertex] = coordinates
+                    vertexByCoordinates[coordinates] = vertex
+                }
+            }
+
+            return Grid(coordinatesByVertex, vertexByCoordinates)
+        }
+
+        /**
+         * Type-safe builder for creating a [Row] of a grid.
+         *
+         * Example usage:
+         * ```
+         * row {
+         *     vertex("a")
+         *     vertex("b")
+         *     vertex("c")
+         * }
+         * ```
+         * @param init Function with receiver.
+         * @return Row.
+         */
+        fun row(init: Row<T>.() -> Unit): Row<T> {
+            val row = Row<T>()
+            row.init()
+            rows.add(row)
+            return row
         }
     }
+}
+
+/**
+ * Type-safe builder for creating a [Grid].
+ *
+ * Example usage:
+ * ```
+ * grid {
+ *     row {
+ *         vertex("a")
+ *         vertex("b")
+ *     }
+ *     row {
+ *         vertex("c")
+ *         vertex("d")
+ *     }
+ * }
+ * ```
+ * @param init Function with receiver.
+ * @return Grid.
+ */
+fun <T> grid(init: Builder<T>.() -> Unit): Grid<T> {
+    val builder = Builder<T>()
+    builder.init()
+    return builder.build()
 }

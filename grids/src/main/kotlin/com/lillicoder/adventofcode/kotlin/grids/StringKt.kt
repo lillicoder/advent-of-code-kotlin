@@ -16,20 +16,21 @@
 
 package com.lillicoder.adventofcode.kotlin.grids
 
-import com.lillicoder.adventofcode.kotlin.math.to
-
 /**
  * Converts this string to a [Grid]. Each character in each line
  * is considered a vertex.
  */
-fun <T> String.toGrid(transform: (Char) -> T): Grid<T> {
-    val builder = Grid.Builder<T>()
-
-    lines().forEachIndexed { y, row ->
-        row.forEachIndexed { x, vertex ->
-            builder.vertex(x.to(y), transform(vertex))
+fun <T> String.toGrid(transform: (Char) -> T) =
+    grid {
+        lines().forEach { line ->
+            row {
+                line.forEach { element ->
+                    vertex(
+                        transform(
+                            element,
+                        ),
+                    )
+                }
+            }
         }
     }
-
-    return builder.build()
-}

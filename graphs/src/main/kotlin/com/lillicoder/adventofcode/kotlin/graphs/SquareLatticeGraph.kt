@@ -94,9 +94,11 @@ class SquareLatticeGraph<T>(
 
     /**
      * [Graph.Builder] for [SquareLatticeGraph] instances.
-     * @param builder [Grid.Builder] for building structure.
      */
-    class Builder<T>(private val builder: Grid.Builder<T> = Grid.Builder()) : Graph.Builder<T>() {
+    class Builder<T>(
+        private val coordinatesByVertex: MutableMap<Vertex<T>, Coordinates> = mutableMapOf(),
+        private val vertexByCoordinates: MutableMap<Coordinates, Vertex<T>> = mutableMapOf(),
+    ) : Graph.Builder<T>() {
         override fun build() = build(allowDiagonals = false)
 
         /**
@@ -106,7 +108,11 @@ class SquareLatticeGraph<T>(
          * @return Graph.
          */
         fun build(
-            grid: Grid<T> = builder.build(),
+            grid: Grid<T> =
+                Grid(
+                    coordinatesByVertex,
+                    vertexByCoordinates,
+                ),
             allowDiagonals: Boolean = false,
             weight: (Vertex<T>, Vertex<T>) -> Long = { _, _ -> 1L },
         ) = vertices.keys.forEach { vertex ->
@@ -134,7 +140,8 @@ class SquareLatticeGraph<T>(
             element: T,
         ) = apply {
             vertex(element) {
-                builder.vertex(coordinates, it)
+                coordinatesByVertex[it] = coordinates
+                vertexByCoordinates[coordinates] = it
             }
         }
 
