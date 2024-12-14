@@ -50,5 +50,5 @@ object Resources {
      * @param filename Resource filename.
      * @return Resource stream or null if there is no such resource.
      */
-    private fun stream(filename: String) = javaClass.classLoader.getResourceAsStream(filename)
+    internal fun stream(filename: String) = javaClass.classLoader.getResourceAsStream(filename)
 }
