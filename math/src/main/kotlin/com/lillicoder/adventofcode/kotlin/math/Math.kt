@@ -31,7 +31,7 @@ object Math {
      */
     fun area(
         interior: Long,
-        boundary: Int,
+        boundary: Long,
     ) = interior - (boundary / 2) + 1
 
     /**
@@ -39,14 +39,10 @@ object Math {
      * @param values Values to find the least common multiple of.
      * @return least common multiple.
      */
-    fun leastCommonMultiple(values: List<Long>): Long {
-        var lcm = values.first()
-        for (index in 1 until values.size) {
-            lcm = leastCommonMultiple(lcm, values[index])
+    fun leastCommonMultiple(values: List<Long>) =
+        values.reduce { acc, value ->
+            leastCommonMultiple(acc, value)
         }
-
-        return lcm
-    }
 
     /**
      * Finds the least common multiple of the two given numbers.
@@ -54,7 +50,7 @@ object Math {
      * @param second Second number.
      * @return least common multiple.
      */
-    private fun leastCommonMultiple(
+    internal fun leastCommonMultiple(
         first: Long,
         second: Long,
     ): Long {
