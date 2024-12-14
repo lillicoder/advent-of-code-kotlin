@@ -6,7 +6,7 @@ import kotlin.test.assertEquals
 /**
  * Unit tests for {Math].
  */
-class MathTest {
+internal class MathTest {
     @Test
     fun `Polygon area matches expected`() {
         val interior = 100L
