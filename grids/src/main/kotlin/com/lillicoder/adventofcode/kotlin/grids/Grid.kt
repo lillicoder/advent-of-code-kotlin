@@ -16,7 +16,6 @@
 
 package com.lillicoder.adventofcode.kotlin.grids
 
-import com.lillicoder.adventofcode.kotlin.grids.Grid.Builder
 import com.lillicoder.adventofcode.kotlin.math.Coordinates
 import com.lillicoder.adventofcode.kotlin.math.Direction
 import com.lillicoder.adventofcode.kotlin.math.Vertex
@@ -128,17 +127,24 @@ class Grid<T>(
     ) = vertexByCoordinates[coordinatesByVertex[vertex]?.shift(direction)]
 
     /**
-     * Gets each [Vertex] neighboring the given vertex in each [Direction].
+     * Gets each [Vertex] neighboring the given vertex in each cardinal [Direction].
      * @param vertex Vertex.
+     * @param allowDiagonals True to include diagonally adjacent vertices.
      * @return Neighboring vertices.
      */
-    fun neighbors(vertex: Vertex<T>) =
-        listOfNotNull(
-            neighbor(vertex, Direction.LEFT),
-            neighbor(vertex, Direction.UP),
-            neighbor(vertex, Direction.DOWN),
-            neighbor(vertex, Direction.RIGHT),
-        )
+    fun neighbors(
+        vertex: Vertex<T>,
+        allowDiagonals: Boolean = false,
+    ) = listOfNotNull(
+        neighbor(vertex, Direction.LEFT),
+        neighbor(vertex, Direction.UP),
+        neighbor(vertex, Direction.DOWN),
+        neighbor(vertex, Direction.RIGHT),
+        if (allowDiagonals) neighbor(vertex, Direction.LEFT_UP) else null,
+        if (allowDiagonals) neighbor(vertex, Direction.RIGHT_UP) else null,
+        if (allowDiagonals) neighbor(vertex, Direction.RIGHT_DOWN) else null,
+        if (allowDiagonals) neighbor(vertex, Direction.LEFT_DOWN) else null,
+    )
 
     /**
      * Gets the row of [Vertex] for the given row index.
@@ -246,8 +252,8 @@ class Grid<T>(
  * @param init Function with receiver.
  * @return Grid.
  */
-fun <T> grid(init: Builder<T>.() -> Unit): Grid<T> {
-    val builder = Builder<T>()
+fun <T> grid(init: Grid.Builder<T>.() -> Unit): Grid<T> {
+    val builder = Grid.Builder<T>()
     builder.init()
     return builder.build()
 }

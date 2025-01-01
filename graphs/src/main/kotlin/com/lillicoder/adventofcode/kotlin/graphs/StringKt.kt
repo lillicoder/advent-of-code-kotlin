@@ -16,9 +16,9 @@
 
 package com.lillicoder.adventofcode.kotlin.graphs
 
+import com.lillicoder.adventofcode.kotlin.grids.toGrid
 import com.lillicoder.adventofcode.kotlin.io.splitMapNotEmpty
 import com.lillicoder.adventofcode.kotlin.math.Vertex
-import com.lillicoder.adventofcode.kotlin.math.to
 
 /**
  * Converts this string to a [SquareLatticeGraph]. Each character in each line is considered
@@ -45,18 +45,35 @@ fun <T> String.gridToGraph(
     transform: (Char) -> T,
     weight: (Vertex<T>, Vertex<T>) -> Long = { _, _ -> 1L },
 ): SquareLatticeGraph<T> {
-    val builder = SquareLatticeGraph.Builder<T>()
+    val grid = toGrid(transform)
+    val graph =
+        graph {
+            // Create all vertices
+            grid.forEach {
+                vertex(vertex = it)
+            }
 
-    lines().forEachIndexed { y, row ->
-        row.forEachIndexed { x, node ->
-            builder.vertex(x.to(y), transform(node))
+            // Connect each vertex's neighbors with an edge
+            grid.forEach { vertex ->
+                grid.neighbors(
+                    vertex,
+                    allowDiagonals,
+                ).forEach { neighbor ->
+                    edge(
+                        sourceId = vertex.id,
+                        destinationId = neighbor.id,
+                    ) {
+                        weight(
+                            weight(
+                                vertex,
+                                neighbor,
+                            ),
+                        )
+                    }
+                }
+            }
         }
-    }
-
-    return builder.build(
-        allowDiagonals = allowDiagonals,
-        weight = weight,
-    )
+    return SquareLatticeGraph(graph, grid)
 }
 
 /**

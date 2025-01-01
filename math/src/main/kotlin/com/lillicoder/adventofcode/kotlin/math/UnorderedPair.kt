@@ -46,3 +46,10 @@ data class UnorderedPair<out A, out B>(
 
     override fun toString() = "($first, $second)"
 }
+
+/**
+ * Creates an unordered pair from this and that.
+ * @param that Other value.
+ * @return Unordered pair.
+ */
+fun <A, B> A.to(that: B) = UnorderedPair(this, that)
