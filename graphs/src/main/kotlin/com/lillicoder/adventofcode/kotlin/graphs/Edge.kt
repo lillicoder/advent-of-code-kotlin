@@ -31,7 +31,7 @@ data class Edge<T>(
     val source: Vertex<T>,
     val destination: Vertex<T>,
     val isDirected: Boolean = false,
-    val weight: Long = 1L,
+    val weight: Long = 0L,
 ) {
     internal val vertices =
         when (isDirected) {

@@ -24,8 +24,16 @@ import com.lillicoder.adventofcode.kotlin.math.Vertex
 interface Graph<T> : Iterable<Vertex<T>> {
     override fun iterator() =
         object : Iterator<Vertex<T>> {
-            private val queue = ArrayDeque<Vertex<T>>().also { it.add(root()) }
-            private val visited = linkedMapOf(root() to true)
+            private val queue =
+                ArrayDeque<Vertex<T>>().also {
+                    val root = root()
+                    if (root != null) it.add(root)
+                }
+            private val visited =
+                linkedMapOf<Vertex<T>, Boolean>().also {
+                    val root = root()
+                    if (root != null) it[root] = true
+                }
 
             override fun hasNext() = queue.isNotEmpty()
 
@@ -62,15 +70,15 @@ interface Graph<T> : Iterable<Vertex<T>> {
      * Gets all neighbors of the given [Vertex]. A vertex is considered
      * a neighbor if there is an edge to it from the given vertex.
      * @param vertex Vertex.
-     * @return Neighbors.
+     * @return Neighbors or an empty set if there are no neighbors.
      */
     fun neighbors(vertex: Vertex<T>): Set<Vertex<T>>
 
     /**
      * Gets the first [Vertex] added to this graph.
-     * @return First vertex.
+     * @return First vertex or null if there are no vertices in this graph.
      */
-    fun root(): Vertex<T>
+    fun root(): Vertex<T>?
 
     /**
      * Gets the number of vertices in this graph.
