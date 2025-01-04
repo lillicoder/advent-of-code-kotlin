@@ -37,13 +37,13 @@ fun String.gridToGraph(allowDiagonals: Boolean = false) =
  * a vertex. Each vertex is connected to the vertices adjacent to it in each cardinal direction.
  * @param allowDiagonals True to also connect diagonally adjacent vertices with edges.
  * @param transform Transform to apply to each character in the grid when creating vertices.
- * @param weight Operation to determine edge weight, if any, when connecting two vertices.
+ * @param operation Optional operation to determine edge weight when connecting two vertices.
  * @return Graph.
  */
 fun <T> String.gridToGraph(
     allowDiagonals: Boolean = false,
     transform: (Char) -> T,
-    weight: (Vertex<T>, Vertex<T>) -> Long = { _, _ -> 1L },
+    operation: ((Vertex<T>, Vertex<T>) -> Long)? = null,
 ): SquareLatticeGraph<T> {
     val grid = toGrid(transform)
     val graph =
@@ -63,12 +63,9 @@ fun <T> String.gridToGraph(
                         sourceId = vertex.id,
                         destinationId = neighbor.id,
                     ) {
-                        weight(
-                            weight(
-                                vertex,
-                                neighbor,
-                            ),
-                        )
+                        operation?.invoke(vertex, neighbor)?.let {
+                            weight(it)
+                        }
                     }
                 }
             }
