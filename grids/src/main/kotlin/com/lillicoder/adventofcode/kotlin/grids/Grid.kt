@@ -98,6 +98,10 @@ class Grid<T>(
             it.right() -> Direction.RIGHT
             it.down() -> Direction.DOWN
             it.up() -> Direction.UP
+            it.leftUp() -> Direction.LEFT_UP
+            it.rightUp() -> Direction.RIGHT_UP
+            it.leftDown() -> Direction.LEFT_DOWN
+            it.rightDown() -> Direction.RIGHT_DOWN
             else -> Direction.UNKNOWN
         }
     } ?: Direction.UNKNOWN
@@ -124,7 +128,10 @@ class Grid<T>(
     fun neighbor(
         vertex: Vertex<T>,
         direction: Direction,
-    ) = vertexByCoordinates[coordinatesByVertex[vertex]?.shift(direction)]
+    ) = when (direction) {
+        Direction.UNKNOWN -> null
+        else -> vertexByCoordinates[coordinatesByVertex[vertex]?.shift(direction)]
+    }
 
     /**
      * Gets each [Vertex] neighboring the given vertex in each cardinal [Direction].

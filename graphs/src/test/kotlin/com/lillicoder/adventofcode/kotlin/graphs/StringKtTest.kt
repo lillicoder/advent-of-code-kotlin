@@ -27,41 +27,43 @@ import kotlin.test.assertTrue
 internal class StringKtTest {
     private val raw =
         """
-            123
-            456
-            789
+        123
+        456
+        789
         """.trimIndent()
 
     @Test
     fun `Grid to graph creates vertices in order`() {
-        val expected = listOf(
-            Vertex(0L, "1"),
-            Vertex(1L, "2"),
-            Vertex(2L, "3"),
-            Vertex(3L, "4"),
-            Vertex(4L, "5"),
-            Vertex(5L, "6"),
-            Vertex(6L, "7"),
-            Vertex(7L, "8"),
-            Vertex(8L, "9"),
-        )
+        val expected =
+            listOf(
+                Vertex(0L, "1"),
+                Vertex(1L, "2"),
+                Vertex(2L, "3"),
+                Vertex(3L, "4"),
+                Vertex(4L, "5"),
+                Vertex(5L, "6"),
+                Vertex(6L, "7"),
+                Vertex(7L, "8"),
+                Vertex(8L, "9"),
+            )
         val actual = raw.gridToGraph()
         assertContentEquals(expected, actual)
     }
 
     @Test
     fun `Grid to graph creates edges between all neighboring vertices`() {
-        val vertices = mapOf(
-            "1" to Vertex(0L, "1"),
-            "2" to Vertex(1L, "2"),
-            "3" to Vertex(2L, "3"),
-            "4" to Vertex(3L, "4"),
-            "5" to Vertex(4L, "5"),
-            "6" to Vertex(5L, "6"),
-            "7" to Vertex(6L, "7"),
-            "8" to Vertex(7L, "8"),
-            "9" to Vertex(8L, "9"),
-        )
+        val vertices =
+            mapOf(
+                "1" to Vertex(0L, "1"),
+                "2" to Vertex(1L, "2"),
+                "3" to Vertex(2L, "3"),
+                "4" to Vertex(3L, "4"),
+                "5" to Vertex(4L, "5"),
+                "6" to Vertex(5L, "6"),
+                "7" to Vertex(6L, "7"),
+                "8" to Vertex(7L, "8"),
+                "9" to Vertex(8L, "9"),
+            )
         val graph = raw.gridToGraph()
 
         // 1 is connected to 2, 4
