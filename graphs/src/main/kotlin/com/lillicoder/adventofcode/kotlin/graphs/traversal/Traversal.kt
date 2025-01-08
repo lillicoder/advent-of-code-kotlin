@@ -36,41 +36,6 @@ interface Traversal<T> {
 }
 
 /**
- * Depth-first [Traversal] of a given [Graph].
- * @param graph Graph to traverse.
- */
-class DepthFirstTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
-    private val stack = ArrayDeque<Vertex<T>>()
-    private val visited = linkedMapOf<Vertex<T>, Boolean>()
-
-    override fun path(
-        start: Vertex<T>,
-        destination: Vertex<T>,
-    ): List<Vertex<T>> {
-        stack.add(start)
-
-        while (stack.isNotEmpty()) {
-            val next = stack.removeFirst()
-            if (destination == next) {
-                visited[next] = true
-                return visited.keys.toList()
-            }
-
-            if (!visited.contains(next)) {
-                visited[next] = true
-                graph.neighbors(next).forEach {
-                    if (!visited.contains(it) && !stack.contains(it)) {
-                        stack.addFirst(it)
-                    }
-                }
-            }
-        }
-
-        return emptyList()
-    }
-}
-
-/**
  * Dijkstra [Traversal] of a given [Graph].
  * @param graph Graph to traverse.
  */

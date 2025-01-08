@@ -49,6 +49,12 @@ class BreadthFirstTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
         return emptyList()
     }
 
+    /**
+     * Unwinds the path from the given [Vertex] to the vertex that started
+     * this traversal.
+     * @param destination Destination.
+     * @return Path from start to destination.
+     */
     private fun unwind(destination: Vertex<T>): List<Vertex<T>> {
         val path = mutableListOf(destination)
 
