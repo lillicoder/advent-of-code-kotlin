@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.kotlin.graphs
+package com.lillicoder.adventofcode.kotlin.graphs.traversal
 
+import com.lillicoder.adventofcode.kotlin.graphs.Graph
 import com.lillicoder.adventofcode.kotlin.math.Vertex
 
 /**
@@ -32,40 +33,6 @@ interface Traversal<T> {
         start: Vertex<T>,
         destination: Vertex<T>,
     ): List<Vertex<T>>
-}
-
-/**
- * Breadth-first [Traversal] of a given [Graph].
- * @param graph Graph to traverse.
- */
-class BreadthFirstTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
-    private val queue = ArrayDeque<Vertex<T>>()
-    private val visited = linkedMapOf<Vertex<T>, Boolean>()
-
-    override fun path(
-        start: Vertex<T>,
-        destination: Vertex<T>,
-    ): List<Vertex<T>> {
-        queue.add(start)
-        visited[start] = true
-
-        while (queue.isNotEmpty()) {
-            val next = queue.removeFirst()
-            if (next == destination) {
-                visited[next] = true
-                return visited.keys.toList()
-            }
-
-            graph.neighbors(next).forEach {
-                if (!visited.contains(it)) {
-                    visited[it] = true
-                    queue.add(it)
-                }
-            }
-        }
-
-        return emptyList()
-    }
 }
 
 /**
