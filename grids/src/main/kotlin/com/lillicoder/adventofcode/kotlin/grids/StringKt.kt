@@ -18,6 +18,12 @@ package com.lillicoder.adventofcode.kotlin.grids
 
 /**
  * Converts this string to a [Grid]. Each character in each line
+ * is considered a vertex. Each character will be converted to a string.
+ */
+fun String.toGrid() = toGrid { it.toString() }
+
+/**
+ * Converts this string to a [Grid]. Each character in each line
  * is considered a vertex.
  */
 fun <T> String.toGrid(transform: (Char) -> T) =
