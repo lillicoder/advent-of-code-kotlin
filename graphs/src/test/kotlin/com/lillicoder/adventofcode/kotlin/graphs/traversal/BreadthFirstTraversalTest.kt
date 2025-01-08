@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.kotlin.graphs
+package com.lillicoder.adventofcode.kotlin.graphs.traversal
 
-import com.lillicoder.adventofcode.kotlin.graphs.traversal.BreadthFirstTraversal
+import com.lillicoder.adventofcode.kotlin.graphs.graph
 import com.lillicoder.adventofcode.kotlin.math.Vertex
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
