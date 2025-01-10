@@ -23,27 +23,11 @@ import com.lillicoder.adventofcode.kotlin.math.to
 
 /**
  * A two-dimensional grid of [Vertex].
- * @param coordinatesByVertex Each vertex mapped to its [Coordinates].
- * @param vertexByCoordinates Each coordinate mapped to its vertex.
- * @param columns Each column of vertices mapped to its column index.
- * @param rows Each row of vertices mapped to its row index.
- * @param height Grid height.
- * @param width Grid width.
  */
-class Grid<T>(
-    private val coordinatesByVertex: Map<Vertex<T>, Coordinates>,
-    private val vertexByCoordinates: Map<Coordinates, Vertex<T>>,
-    private val columns: Map<Long, List<Vertex<T>>> =
-        vertexByCoordinates.keys.groupBy(Coordinates::x).mapValues { entry ->
-            entry.value.map { vertexByCoordinates[it]!! }
-        },
-    private val rows: Map<Long, List<Vertex<T>>> =
-        vertexByCoordinates.keys.groupBy(Coordinates::y).mapValues { entry ->
-            entry.value.map { vertexByCoordinates[it]!! }
-        },
-    val height: Int = rows.size,
-    val width: Int = columns.size,
-) : Iterable<Vertex<T>> {
+interface Grid<T> : Iterable<Vertex<T>> {
+    val height: Int
+    val width: Int
+
     override fun iterator() =
         object : Iterator<Vertex<T>> {
             private var rows = rows().iterator()
@@ -66,21 +50,21 @@ class Grid<T>(
      * @param index Column index.
      * @return Column or null if there is no column for the given index.
      */
-    fun column(index: Int) = columns[index.toLong()]
+    fun column(index: Int): List<Vertex<T>>?
 
     /**
      * Gets each column of [Vertex] in this graph in index order.
      * Vertices in each column are in row index order.
      * @return Rows.
      */
-    fun columns() = columns.map { it.value }
+    fun columns(): List<List<Vertex<T>>>
 
     /**
      * Gets the [Coordinates] for the given [Vertex].
      * @param vertex Vertex.
      * @Return Coordinates or null if there are no coordinates for the given vertex.
      */
-    fun coordinates(vertex: Vertex<T>) = coordinatesByVertex[vertex]
+    fun coordinates(vertex: Vertex<T>): Coordinates?
 
     /**
      * Determines the [Direction] from the given source [Vertex] to the given destination vertex.
@@ -92,8 +76,8 @@ class Grid<T>(
     fun direction(
         source: Vertex<T>,
         destination: Vertex<T>,
-    ) = coordinatesByVertex[source]?.let {
-        when (coordinatesByVertex[destination]) {
+    ) = coordinates(source)?.let {
+        when (coordinates(destination)) {
             it.left() -> Direction.LEFT
             it.right() -> Direction.RIGHT
             it.down() -> Direction.DOWN
@@ -128,10 +112,7 @@ class Grid<T>(
     fun neighbor(
         vertex: Vertex<T>,
         direction: Direction,
-    ) = when (direction) {
-        Direction.UNKNOWN -> null
-        else -> vertexByCoordinates[coordinatesByVertex[vertex]?.shift(direction)]
-    }
+    ): Vertex<T>?
 
     /**
      * Gets each [Vertex] neighboring the given vertex in each cardinal [Direction].
@@ -158,24 +139,17 @@ class Grid<T>(
      * @param index Row index.
      * @return Row or null if there is no row for the given index.
      */
-    fun row(index: Int) = rows[index.toLong()]
+    fun row(index: Int): List<Vertex<T>>?
 
     /**
      * Gets each row of [Vertex] in this graph in index order.
      * Vertices in each row are in column index order.
      * @return Rows.
      */
-    fun rows() = rows.map { it.value }
-
-    override fun toString() =
-        rows.values.joinToString(System.lineSeparator()) { row ->
-            row.joinToString("") {
-                it.value.toString()
-            }
-        }
+    fun rows(): List<List<Vertex<T>>>
 
     /**
-     * Builder for [Grid] instances.
+     * Builder for [ListGrid] instances.
      * @param rows Rows of the grid.
      */
     class Builder<T>(
@@ -201,21 +175,7 @@ class Grid<T>(
          * Instantiates a new [Grid] from this builder.
          * @return Grid.
          */
-        fun build(): Grid<T> {
-            val coordinatesByVertex = mutableMapOf<Vertex<T>, Coordinates>()
-            val vertexByCoordinates = mutableMapOf<Coordinates, Vertex<T>>()
-
-            rows.forEachIndexed { y, row ->
-                row.forEachIndexed { x, element ->
-                    val coordinates = x.to(y)
-                    val vertex = Vertex(coordinatesByVertex.size.toLong(), element)
-                    coordinatesByVertex[vertex] = coordinates
-                    vertexByCoordinates[coordinates] = vertex
-                }
-            }
-
-            return Grid(coordinatesByVertex, vertexByCoordinates)
-        }
+        fun build() = toMapGrid()
 
         /**
          * Type-safe builder for creating a [Row] of a grid.
@@ -237,11 +197,45 @@ class Grid<T>(
             rows.add(row)
             return row
         }
+
+        /**
+         * Creates a [ListGrid] from this builder.
+         * @return List grid.
+         */
+        private fun toListGrid(): ListGrid<T> {
+            val vertices =
+                rows.mapIndexed { y, row ->
+                    row.mapIndexed { x, element ->
+                        Vertex(x.toLong() + y.toLong(), element)
+                    }
+                }
+            return ListGrid(vertices)
+        }
+
+        /**
+         * Creates a [MapGrid] from this builder.
+         * @return Map grid.
+         */
+        private fun toMapGrid(): MapGrid<T> {
+            val verticesWithCoordinates =
+                rows.flatMapIndexed { y, row ->
+                    row.mapIndexed { x, element ->
+                        Pair(
+                            Vertex(x.toLong() + y.toLong(), element),
+                            x.to(y),
+                        )
+                    }
+                }
+            return MapGrid(
+                verticesWithCoordinates.associate { it },
+                verticesWithCoordinates.associateBy({ it.second }, { it.first }),
+            )
+        }
     }
 }
 
 /**
- * Type-safe builder for creating a [Grid].
+ * Type-safe builder for creating a [ListGrid].
  *
  * Example usage:
  * ```
