@@ -265,8 +265,4 @@ interface Grid<T> : Iterable<Vertex<T>> {
  * @param init Function with receiver.
  * @return Grid.
  */
-fun <T> grid(init: Grid.Builder<T>.() -> Unit): Grid<T> {
-    val builder = Grid.Builder<T>()
-    builder.init()
-    return builder.build()
-}
+fun <T> grid(init: Grid.Builder<T>.() -> Unit): Grid<T> = mapGrid(init)
