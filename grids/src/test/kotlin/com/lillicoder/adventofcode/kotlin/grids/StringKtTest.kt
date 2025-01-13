@@ -45,7 +45,7 @@ internal class StringKtTest {
                 Vertex(7L, "8"),
                 Vertex(8L, "9"),
             )
-        val actual = raw.toGrid()
+        val actual = raw.toGrid().map { it }
         assertContentEquals(expected, actual)
     }
 }

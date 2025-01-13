@@ -31,7 +31,11 @@ interface Grid<T> : Iterable<Vertex<T>> {
     override fun iterator() =
         object : Iterator<Vertex<T>> {
             private var rows = rows().iterator()
-            private var columns = rows.next().iterator()
+            private var columns =
+                when (rows.hasNext()) {
+                    true -> rows.next().iterator()
+                    else -> emptyList<Vertex<T>>().iterator()
+                }
 
             override fun hasNext() = columns.hasNext() || rows.hasNext()
 
@@ -165,6 +169,12 @@ interface Grid<T> : Iterable<Vertex<T>> {
             override fun iterator() = vertices.iterator()
 
             /**
+             * Gets the size of this row.
+             * @return Size.
+             */
+            fun size() = vertices.size
+
+            /**
              * Adds a vertex to the end of this row with the given value.
              * @param element Value.
              */
@@ -217,11 +227,12 @@ interface Grid<T> : Iterable<Vertex<T>> {
          * @return Map grid.
          */
         private fun toMapGrid(): MapGrid<T> {
+            val width = rows.firstOrNull()?.size() ?: 0
             val verticesWithCoordinates =
                 rows.flatMapIndexed { y, row ->
                     row.mapIndexed { x, element ->
                         Pair(
-                            Vertex(x.toLong() + y.toLong(), element),
+                            Vertex(x.toLong() + (width * y).toLong(), element),
                             x.to(y),
                         )
                     }

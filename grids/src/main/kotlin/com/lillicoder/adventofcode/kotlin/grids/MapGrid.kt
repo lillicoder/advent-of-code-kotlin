@@ -20,7 +20,6 @@ import com.lillicoder.adventofcode.kotlin.math.Coordinates
 import com.lillicoder.adventofcode.kotlin.math.Direction
 import com.lillicoder.adventofcode.kotlin.math.Vertex
 
-
 /**
  * [Grid] implemented with two-way mappings of [Vertex] and [Coordinates].
  *
