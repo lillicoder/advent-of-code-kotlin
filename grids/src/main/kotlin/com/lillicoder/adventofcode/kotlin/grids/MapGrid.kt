@@ -71,3 +71,28 @@ class MapGrid<T>(
             }
         }
 }
+
+/**
+ * Type-safe builder for creating a [MapGrid].
+ *
+ * Example usage:
+ * ```
+ * mapGrid {
+ *     row {
+ *         vertex("a")
+ *         vertex("b")
+ *     }
+ *     row {
+ *         vertex("c")
+ *         vertex("d")
+ *     }
+ * }
+ * ```
+ * @param init Function with receiver.
+ * @return List grid.
+ */
+fun <T> mapGrid(init: Grid.Builder<T>.() -> Unit): MapGrid<T> {
+    val builder = Grid.Builder<T>()
+    builder.init()
+    return builder.toMapGrid()
+}
