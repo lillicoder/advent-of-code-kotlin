@@ -212,11 +212,12 @@ interface Grid<T> : Iterable<Vertex<T>> {
          * Creates a [ListGrid] from this builder.
          * @return List grid.
          */
-        private fun toListGrid(): ListGrid<T> {
+        internal fun toListGrid(): ListGrid<T> {
+            val width = rows.firstOrNull()?.size() ?: 0
             val vertices =
                 rows.mapIndexed { y, row ->
                     row.mapIndexed { x, element ->
-                        Vertex(x.toLong() + y.toLong(), element)
+                        Vertex(x.toLong() + (width * y).toLong(), element)
                     }
                 }
             return ListGrid(vertices)
@@ -226,7 +227,7 @@ interface Grid<T> : Iterable<Vertex<T>> {
          * Creates a [MapGrid] from this builder.
          * @return Map grid.
          */
-        private fun toMapGrid(): MapGrid<T> {
+        internal fun toMapGrid(): MapGrid<T> {
             val width = rows.firstOrNull()?.size() ?: 0
             val verticesWithCoordinates =
                 rows.flatMapIndexed { y, row ->
@@ -246,7 +247,7 @@ interface Grid<T> : Iterable<Vertex<T>> {
 }
 
 /**
- * Type-safe builder for creating a [ListGrid].
+ * Type-safe builder for creating a [Grid].
  *
  * Example usage:
  * ```

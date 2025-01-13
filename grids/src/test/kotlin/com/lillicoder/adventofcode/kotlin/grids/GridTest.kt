@@ -21,7 +21,6 @@ import com.lillicoder.adventofcode.kotlin.math.Vertex
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 /**
  * Unit tests for [Grid].
@@ -158,53 +157,49 @@ internal class GridTest {
     }
 
     @Test
-    fun `Neighbors for center are correct in all directions`() {
+    fun `Neighbors without diagonals for center matches are correct`() {
         val expected =
             listOf(
-                "2",
-                "8",
-                "4",
-                "6",
-                "1",
-                "3",
-                "9",
-                "7",
+                grid.find { it.value == "4" },
+                grid.find { it.value == "2" },
+                grid.find { it.value == "8" },
+                grid.find { it.value == "6" },
             )
 
         val center = grid.find { it.value == "5" }!!
-        val actual =
-            Direction.entries.mapNotNull {
-                grid.neighbor(center, it)?.value
-            }
+        val actual = grid.neighbors(center)
 
         assertContentEquals(expected, actual)
     }
 
     @Test
-    fun `Neighbor for invalid vertex in any direction is null`() {
-        val expected = List(9) { null }
+    fun `Neighbors with diagonals for center matches are correct`() {
+        val expected =
+            listOf(
+                grid.find { it.value == "4" },
+                grid.find { it.value == "2" },
+                grid.find { it.value == "8" },
+                grid.find { it.value == "6" },
+                grid.find { it.value == "1" },
+                grid.find { it.value == "3" },
+                grid.find { it.value == "9" },
+                grid.find { it.value == "7" },
+            )
+
+        val center = grid.find { it.value == "5" }!!
+        val actual = grid.neighbors(center, true)
+
+        assertContentEquals(expected, actual)
+    }
+
+    @Test
+    fun `Neighbors for invalid vertex are null`() {
+        val expected = emptyList<Vertex<String>>()
 
         val vertex = Vertex(100L, "123")
-        val actual =
-            Direction.entries.map {
-                grid.neighbor(vertex, it)
-            }
+        val actual = grid.neighbors(vertex)
 
         assertContentEquals(expected, actual)
-    }
-
-    @Test
-    fun `Neighbor in invalid direction is null`() {
-        val first = grid.first()
-        val actual = grid.neighbor(first, Direction.LEFT)
-        assertNull(actual)
-    }
-
-    @Test
-    fun `Neighbor in unknown direction is null`() {
-        val first = grid.first()
-        val actual = grid.neighbor(first, Direction.UNKNOWN)
-        assertNull(actual)
     }
 
     @Test

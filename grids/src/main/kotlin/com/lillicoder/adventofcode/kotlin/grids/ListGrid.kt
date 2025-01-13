@@ -35,7 +35,13 @@ class ListGrid<T>(
     override val height: Int = vertices.size,
     override val width: Int = vertices[0].size,
 ) : Grid<T> {
-    override fun column(index: Int) = vertices.map { it[index] }
+    override fun column(index: Int): List<Vertex<T>>? {
+        val column = vertices.mapNotNull { it.getOrNull(index) }
+        return when (column.isEmpty()) {
+            true -> null
+            else -> column
+        }
+    }
 
     override fun columns() =
         (0..<width).map { columnIndex ->
@@ -68,7 +74,32 @@ class ListGrid<T>(
             }
     }
 
-    override fun row(index: Int) = vertices[index]
+    override fun row(index: Int) = vertices.getOrNull(index)
 
     override fun rows() = vertices
+}
+
+/**
+ * Type-safe builder for creating a [ListGrid].
+ *
+ * Example usage:
+ * ```
+ * listGrid {
+ *     row {
+ *         vertex("a")
+ *         vertex("b")
+ *     }
+ *     row {
+ *         vertex("c")
+ *         vertex("d")
+ *     }
+ * }
+ * ```
+ * @param init Function with receiver.
+ * @return List grid.
+ */
+fun <T> listGrid(init: Grid.Builder<T>.() -> Unit): ListGrid<T> {
+    val builder = Grid.Builder<T>()
+    builder.init()
+    return builder.toListGrid()
 }

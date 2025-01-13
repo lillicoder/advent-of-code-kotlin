@@ -35,14 +35,14 @@ internal class SquareLatticeGraphTest {
     }
 
     @Test
-    fun `Column by ID returns correct column`() {
+    fun `Column by index returns correct column`() {
         val expected = listOf("1", "4", "7")
         val actual = graph.column(0)!!.map { it.value }
         assertContentEquals(expected, actual)
     }
 
     @Test
-    fun `Column by invalid ID returns null`() {
+    fun `Column by invalid index returns null`() {
         val actual = graph.column(100)
         assertNull(actual)
     }
@@ -191,14 +191,14 @@ internal class SquareLatticeGraphTest {
     }
 
     @Test
-    fun `Row by ID returns correct row`() {
+    fun `Row by index returns correct row`() {
         val expected = listOf("1", "2", "3")
         val actual = graph.row(0)!!.map { it.value }
         assertContentEquals(expected, actual)
     }
 
     @Test
-    fun `Row by invalid ID returns null`() {
+    fun `Row by invalid index returns null`() {
         val actual = graph.row(100)
         assertNull(actual)
     }
