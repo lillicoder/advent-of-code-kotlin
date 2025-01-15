@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = "com.lillicoder.adventofcode.kotlin"
-    version = "1.3.0"
+    version = "1.4.0"
 }
 
 subprojects {
