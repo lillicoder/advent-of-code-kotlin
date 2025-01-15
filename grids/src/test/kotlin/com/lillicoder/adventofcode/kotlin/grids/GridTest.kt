@@ -319,8 +319,37 @@ internal abstract class GridTest(
     }
 
     @Test
+    fun `Vertex by valid coordinates matches expected`() {
+        val expected = grid.find { it.value == "5" }
+        val actual = grid.vertex(1.to(1))
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `Vertex by invalid coordinates is null`() {
+        val actual = grid.vertex(100.to(100))
+        assertNull(actual)
+    }
+
+    @Test
     fun `Height matches expected`() = assertEquals(3, grid.height)
 
     @Test
     fun `Width matches expected`() = assertEquals(3, grid.width)
+
+    @Test
+    fun `toString matches expected format`() {
+        val lineSeparatorPattern = "\\n|\\r\\n".toRegex() // Ensure consistent line separators regardless of platform
+        val expected =
+            """
+            123
+            456
+            789
+            """.trimIndent().replace(
+                lineSeparatorPattern,
+                System.lineSeparator(),
+            )
+        val actual = grid.toString()
+        assertEquals(expected, actual)
+    }
 }

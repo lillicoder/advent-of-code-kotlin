@@ -64,6 +64,8 @@ class MapGrid<T>(
 
     override fun rows() = rows.map { it.value }
 
+    override fun vertex(coordinates: Coordinates) = vertexByCoordinates[coordinates]
+
     override fun toString() =
         rows.values.joinToString(System.lineSeparator()) { row ->
             row.joinToString("") {

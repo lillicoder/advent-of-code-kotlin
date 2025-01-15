@@ -153,6 +153,13 @@ interface Grid<T> : Iterable<Vertex<T>> {
     fun rows(): List<List<Vertex<T>>>
 
     /**
+     * Gets the [Vertex] in this grid at the given [Coordinates].
+     * @param coordinates Coordinates.
+     * @return Vertex or null if there is no vertex at the given coordinates.
+     */
+    fun vertex(coordinates: Coordinates): Vertex<T>?
+
+    /**
      * Builder for [ListGrid] instances.
      * @param rows Rows of the grid.
      */

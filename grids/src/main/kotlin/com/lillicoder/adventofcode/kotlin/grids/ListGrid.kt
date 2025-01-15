@@ -77,6 +77,20 @@ class ListGrid<T>(
     override fun row(index: Int) = vertices.getOrNull(index)
 
     override fun rows() = vertices
+
+    override fun vertex(coordinates: Coordinates) =
+        vertices.getOrNull(
+            coordinates.y.toInt(),
+        )?.getOrNull(
+            coordinates.x.toInt(),
+        )
+
+    override fun toString() =
+        rows().joinToString(System.lineSeparator()) { row ->
+            row.joinToString("") {
+                it.value.toString()
+            }
+        }
 }
 
 /**
