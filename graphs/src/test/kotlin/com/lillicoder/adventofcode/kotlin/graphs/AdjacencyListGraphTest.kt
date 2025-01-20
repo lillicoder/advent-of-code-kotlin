@@ -29,11 +29,6 @@ internal class AdjacencyListGraphTest {
             edge(source = 3, destination = 5)
             edge(source = 4, destination = 5)
             edge(source = 5, destination = 6)
-
-            edge(source = 1, destination = 2) {
-                directed()
-                weight(123L)
-            }
         }
     private val emptyGraph = graph<Nothing> {}
 
@@ -193,6 +188,35 @@ internal class AdjacencyListGraphTest {
         val expected = 0
         val actual = emptyGraph.size()
         assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `Sub-graph for existing vertices matches expected`() {
+        val vertices =
+            listOf(
+                graph.vertex(0L)!!,
+                graph.vertex(1L)!!,
+                graph.vertex(2L)!!,
+            )
+        val subgraph = graph.subgraph(vertices)
+
+        // Check vertices
+        val actual =
+            listOf(
+                subgraph.vertex(0L)!!,
+                subgraph.vertex(1L)!!,
+                subgraph.vertex(2L)!!,
+            )
+        assertContentEquals(vertices, actual)
+
+        // Check edges
+        assertTrue(subgraph.adjacent(actual[0], actual[1])) // edge for 1-2 and 2-1
+        assertTrue(subgraph.adjacent(actual[1], actual[2])) // edge for 2-3
+
+        // Check neighbors
+        assertEquals(1, subgraph.neighbors(actual[0]).size)
+        assertEquals(2, subgraph.neighbors(actual[1]).size)
+        assertEquals(1, subgraph.neighbors(actual[2]).size)
     }
 
     @Test

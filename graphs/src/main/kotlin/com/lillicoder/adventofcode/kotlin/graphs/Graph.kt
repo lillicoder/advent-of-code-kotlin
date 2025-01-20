@@ -86,6 +86,18 @@ interface Graph<T> : Iterable<Vertex<T>> {
     fun size(): Int
 
     /**
+     * Creates a sub-graph containing each of the
+     * given [Vertex] in this graph.
+     *
+     * Any vertex not in this graph is ignored. Edges between vertices are preserved.
+     * Any vertex that doesn't have a direct edge to one of the given vertices will be in
+     * the sub-graph but have no edges.
+     * @param vertices Vertices to get a sub-graph of.
+     * @return Sub-graph.
+     */
+    fun subgraph(vertices: List<Vertex<T>>): Graph<T>
+
+    /**
      * Gets the [Vertex] from this graph with the given ID.
      * @param id Vertex ID.
      * @return Vertex or null if there is no matching vertex.

@@ -50,6 +50,23 @@ class AdjacencyListGraph<T>(
 
     override fun size() = vertices.keys.size
 
+    override fun subgraph(vertices: List<Vertex<T>>) =
+        AdjacencyListGraph(
+            // Filter vertices to only those asked for
+            this.vertices.filter {
+                it.key in vertices
+            }.mapValues {
+                // Filter out any vertex edges that have vertices not in the sub-graph
+                it.value.filter {
+                    it.source in vertices && it.destination in vertices
+                }.toSet()
+            },
+            // Filter out any edges that have vertices not in the sub-graph
+            this.edges.filter {
+                it.source in vertices && it.destination in vertices
+            }.toSet(),
+        )
+
     override fun vertex(id: Long) = vertices.keys.find { it.id == id }
 
     /**
