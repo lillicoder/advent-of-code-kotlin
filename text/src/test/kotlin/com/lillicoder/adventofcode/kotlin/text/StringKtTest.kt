@@ -18,11 +18,42 @@ package com.lillicoder.adventofcode.kotlin.text
 
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 /**
  * Unit tests for [String] extensions for resources.
  */
 internal class StringKtTest {
+    @Test
+    fun `toList converts characters to strings`() {
+        val input = " The quick brown fox "
+        val expected = listOf(
+            " ",
+            "T",
+            "h",
+            "e",
+            " ",
+            "q",
+            "u",
+            "i",
+            "c",
+            "k",
+            " ",
+            "b",
+            "r",
+            "o",
+            "w",
+            "n",
+            " ",
+            "f",
+            "o",
+            "x",
+            " ",
+        )
+        val actual = input.toList()
+        assertEquals(expected, actual)
+    }
+
     @Test
     fun `Split map not empty removes empty substrings and maps correctly`() {
         val input = "     1 2 3 4 5      "

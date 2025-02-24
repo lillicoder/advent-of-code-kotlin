@@ -17,6 +17,12 @@
 package com.lillicoder.adventofcode.kotlin.text
 
 /**
+ * Returns a List containing all characters as strings.
+ * @return Characters as strings.
+ */
+fun String.toList() = splitNotEmpty("")
+
+/**
  * Splits this string with the given delimiter and filters out all empty substrings.
  * @return Split.
  */
