@@ -17,8 +17,8 @@
 package com.lillicoder.adventofcode.kotlin.graphs
 
 import com.lillicoder.adventofcode.kotlin.grids.toGrid
-import com.lillicoder.adventofcode.kotlin.io.splitMapNotEmpty
 import com.lillicoder.adventofcode.kotlin.math.Vertex
+import com.lillicoder.adventofcode.kotlin.text.splitNotEmpty
 
 /**
  * Converts this string to a [SquareLatticeGraph]. Each character in each line is considered
@@ -78,4 +78,4 @@ fun <T> String.gridToGraph(
  * to be separated by two line breaks.
  * @return Graphs.
  */
-fun String.gridsToGraph() = splitMapNotEmpty("${lineSequence()}${lineSequence()}") { it.gridToGraph() }
+fun String.gridsToGraph() = splitNotEmpty("${lineSequence()}${lineSequence()}").map { it.gridToGraph() }

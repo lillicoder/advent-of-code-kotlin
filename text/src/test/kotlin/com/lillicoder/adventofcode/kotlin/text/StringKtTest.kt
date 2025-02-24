@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lillicoder.adventofcode.kotlin.io
+package com.lillicoder.adventofcode.kotlin.text
 
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -23,21 +23,6 @@ import kotlin.test.assertContentEquals
  * Unit tests for [String] extensions for resources.
  */
 internal class StringKtTest {
-    @Test
-    fun `Split map maps correctly`() {
-        val input = "1 2 3 4 5"
-        val expected =
-            listOf(
-                1,
-                2,
-                3,
-                4,
-                5,
-            )
-        val actual = input.splitMap(" ") { it.toInt() }
-        assertContentEquals(expected, actual)
-    }
-
     @Test
     fun `Split map not empty removes empty substrings and maps correctly`() {
         val input = "     1 2 3 4 5      "
@@ -49,7 +34,7 @@ internal class StringKtTest {
                 4,
                 5,
             )
-        val actual = input.splitMapNotEmpty(" ") { it.toInt() }
+        val actual = input.splitNotEmpty(" ").map { it.toInt() }
         assertContentEquals(expected, actual)
     }
 
