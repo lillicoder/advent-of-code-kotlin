@@ -28,17 +28,6 @@ object Resources {
     fun lines(filename: String) = stream(filename)?.use { it.reader().readLines() }
 
     /**
-     * Gets all lines of text from the resource with the given filename and maps them with
-     * the given transform function.
-     * @param filename Resource filename.
-     * @return Mapped lines or null if there is no such resource.
-     */
-    fun <T> mapLines(
-        filename: String,
-        transform: (String) -> T,
-    ) = lines(filename)?.map { transform(it) }
-
-    /**
      * Gets all text from the resource with the given filename.
      * @param filename Resource filename.
      * @return Text or null if there is no such resource.

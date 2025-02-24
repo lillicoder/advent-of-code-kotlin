@@ -38,13 +38,13 @@ internal class ResourcesTest {
                 4,
                 5,
             )
-        val actual = Resources.mapLines("test2.txt") { it.toInt() }
+        val actual = Resources.lines("test2.txt")?.map { it.toInt() }
         assertContentEquals(expected, actual)
     }
 
     @Test
     fun `Mapping invalid resource lines is null`() {
-        val actual = Resources.mapLines("fake") { it.toInt() }
+        val actual = Resources.lines("fake")?.map { it.toInt() }
         assertNull(actual)
     }
 
