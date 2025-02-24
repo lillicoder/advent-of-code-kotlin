@@ -17,13 +17,24 @@
 package com.lillicoder.adventofcode.kotlin.text
 
 /**
- * Returns a List containing all characters as strings.
- * @return Characters as strings.
+ * Returns a new string where all line separators for any environment have been replaced
+ * by the one returned from [System.lineSeparator].
+ * @return Normalized string.
  */
-fun String.toList() = splitNotEmpty("")
+fun String.normalizeLineSeparators() =
+    replace(
+        "\\r\\n|\\n|\\r".toRegex(),
+        System.lineSeparator(),
+    )
 
 /**
  * Splits this string with the given delimiter and filters out all empty substrings.
  * @return Split.
  */
 fun String.splitNotEmpty(delimiter: String) = split(delimiter).filter { it.isNotEmpty() }
+
+/**
+ * Returns a List containing all characters as strings.
+ * @return Characters as strings.
+ */
+fun String.toList() = splitNotEmpty("")
