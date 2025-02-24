@@ -27,29 +27,30 @@ internal class StringKtTest {
     @Test
     fun `toList converts characters to strings`() {
         val input = " The quick brown fox "
-        val expected = listOf(
-            " ",
-            "T",
-            "h",
-            "e",
-            " ",
-            "q",
-            "u",
-            "i",
-            "c",
-            "k",
-            " ",
-            "b",
-            "r",
-            "o",
-            "w",
-            "n",
-            " ",
-            "f",
-            "o",
-            "x",
-            " ",
-        )
+        val expected =
+            listOf(
+                " ",
+                "T",
+                "h",
+                "e",
+                " ",
+                "q",
+                "u",
+                "i",
+                "c",
+                "k",
+                " ",
+                "b",
+                "r",
+                "o",
+                "w",
+                "n",
+                " ",
+                "f",
+                "o",
+                "x",
+                " ",
+            )
         val actual = input.toList()
         assertEquals(expected, actual)
     }

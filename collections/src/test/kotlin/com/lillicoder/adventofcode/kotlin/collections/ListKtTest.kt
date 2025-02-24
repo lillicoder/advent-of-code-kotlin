@@ -27,12 +27,13 @@ internal class ListKtTest {
     @Test
     fun `Split by predicate creates sub-lists in order`() {
         val input = "123..321.565.........test...1".toList()
-        val expected = listOf(
-            "123".toList(),
-            "321".toList(),
-            "565".toList(),
-            "1".toList(),
-        )
+        val expected =
+            listOf(
+                "123".toList(),
+                "321".toList(),
+                "565".toList(),
+                "1".toList(),
+            )
 
         val actual = input.split { it.toIntOrNull() == null }
         assertContentEquals(expected, actual)

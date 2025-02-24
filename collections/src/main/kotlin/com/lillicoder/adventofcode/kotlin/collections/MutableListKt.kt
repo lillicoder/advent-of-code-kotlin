@@ -23,4 +23,7 @@ import java.util.Collections
  * @param i First element index.
  * @ j Second element index.
  */
-fun <T> MutableList<T>.swap(i: Int, j: Int) = Collections.swap(this, i, j)
+fun <T> MutableList<T>.swap(
+    i: Int,
+    j: Int,
+) = Collections.swap(this, i, j)
