@@ -17,19 +17,33 @@
 package com.lillicoder.adventofcode.kotlin.graphs
 
 import com.lillicoder.adventofcode.kotlin.math.Vertex
+import com.lillicoder.adventofcode.kotlin.text.normalizeLineSeparators
+import kotlin.math.exp
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
  * Unit tests for [String] extensions for graphs.
  */
 internal class StringKtTest {
-    private val raw =
+    private val single =
         """
         123
         456
         789
+        """.trimIndent()
+
+    private val multiple =
+        """
+        123
+        456
+        789
+        
+        987
+        654
+        321
         """.trimIndent()
 
     @Test
@@ -46,7 +60,7 @@ internal class StringKtTest {
                 Vertex(7L, "8"),
                 Vertex(8L, "9"),
             )
-        val actual = raw.gridToGraph()
+        val actual = single.gridToGraph()
         assertContentEquals(expected, actual)
     }
 
@@ -64,7 +78,7 @@ internal class StringKtTest {
                 "8" to Vertex(7L, "8"),
                 "9" to Vertex(8L, "9"),
             )
-        val graph = raw.gridToGraph()
+        val graph = single.gridToGraph()
 
         // 1 is connected to 2, 4
         assertTrue(graph.adjacent(vertices["1"]!!, vertices["2"]!!))
@@ -107,5 +121,39 @@ internal class StringKtTest {
         // 9 is connected to 6, 8
         assertTrue(graph.adjacent(vertices["9"]!!, vertices["6"]!!))
         assertTrue(graph.adjacent(vertices["9"]!!, vertices["8"]!!))
+    }
+
+    @Test
+    fun `Grids to graphs creates expected number of graphs`() {
+        val expected =
+            listOf(
+                listOf(
+                    Vertex(0L, "1"),
+                    Vertex(1L, "2"),
+                    Vertex(2L, "3"),
+                    Vertex(3L, "4"),
+                    Vertex(4L, "5"),
+                    Vertex(5L, "6"),
+                    Vertex(6L, "7"),
+                    Vertex(7L, "8"),
+                    Vertex(8L, "9"),
+                ),
+                listOf(
+                    Vertex(0L, "9"),
+                    Vertex(1L, "8"),
+                    Vertex(2L, "7"),
+                    Vertex(3L, "6"),
+                    Vertex(4L, "5"),
+                    Vertex(5L, "4"),
+                    Vertex(6L, "3"),
+                    Vertex(7L, "2"),
+                    Vertex(8L, "1"),
+                )
+            )
+
+        val actual = multiple.normalizeLineSeparators().gridsToGraphs()
+        assertEquals(expected.size, actual.size)
+        assertContentEquals(expected.first(), actual.first())
+        assertContentEquals(expected.last(), actual.last())
     }
 }

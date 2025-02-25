@@ -78,4 +78,9 @@ fun <T> String.gridToGraph(
  * to be separated by two line breaks.
  * @return Graphs.
  */
-fun String.gridsToGraph() = splitNotEmpty("${lineSequence()}${lineSequence()}").map { it.gridToGraph() }
+fun String.gridsToGraphs() =
+    splitNotEmpty(
+        "${System.lineSeparator()}${System.lineSeparator()}",
+    ).map {
+        it.gridToGraph()
+    }
