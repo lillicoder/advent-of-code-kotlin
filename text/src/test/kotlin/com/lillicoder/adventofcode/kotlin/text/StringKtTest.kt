@@ -23,14 +23,16 @@ import kotlin.test.assertEquals
 /**
  * Unit tests for [String] extensions for resources.
  */
+@Suppress("ktlint:standard:max-line-length")
 internal class StringKtTest {
     @Test
     fun `Normalized line separators handles legacy Apple-style separators`() {
         val input = "Lorem ipsum dolor sit amet,\rconsectetur adipiscing elit, \rsed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
         val expected = 2
-        val actual = input.normalizeLineSeparators().windowed(System.lineSeparator().length) {
-            if (it == System.lineSeparator()) 1 else 0
-        }.sum()
+        val actual =
+            input.normalizeLineSeparators().windowed(System.lineSeparator().length) {
+                if (it == System.lineSeparator()) 1 else 0
+            }.sum()
         assertEquals(expected, actual)
     }
 
@@ -38,9 +40,10 @@ internal class StringKtTest {
     fun `Normalized line separators handles Unix-style separators`() {
         val input = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit, \nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
         val expected = 2
-        val actual = input.normalizeLineSeparators().windowed(System.lineSeparator().length) {
-            if (it == System.lineSeparator()) 1 else 0
-        }.sum()
+        val actual =
+            input.normalizeLineSeparators().windowed(System.lineSeparator().length) {
+                if (it == System.lineSeparator()) 1 else 0
+            }.sum()
         assertEquals(expected, actual)
     }
 
@@ -48,9 +51,10 @@ internal class StringKtTest {
     fun `Normalized line separators handles Windows-style separators`() {
         val input = "Lorem ipsum dolor sit amet,\r\nconsectetur adipiscing elit, \r\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
         val expected = 2
-        val actual = input.normalizeLineSeparators().windowed(System.lineSeparator().length) {
-            if (it == System.lineSeparator()) 1 else 0
-        }.sum()
+        val actual =
+            input.normalizeLineSeparators().windowed(System.lineSeparator().length) {
+                if (it == System.lineSeparator()) 1 else 0
+            }.sum()
         assertEquals(expected, actual)
     }
 

@@ -18,7 +18,6 @@ package com.lillicoder.adventofcode.kotlin.graphs
 
 import com.lillicoder.adventofcode.kotlin.math.Vertex
 import com.lillicoder.adventofcode.kotlin.text.normalizeLineSeparators
-import kotlin.math.exp
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -148,7 +147,7 @@ internal class StringKtTest {
                     Vertex(6L, "3"),
                     Vertex(7L, "2"),
                     Vertex(8L, "1"),
-                )
+                ),
             )
 
         val actual = multiple.normalizeLineSeparators().gridsToGraphs()
