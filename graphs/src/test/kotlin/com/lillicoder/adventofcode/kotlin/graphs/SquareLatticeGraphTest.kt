@@ -3,6 +3,7 @@ package com.lillicoder.adventofcode.kotlin.graphs
 import com.lillicoder.adventofcode.kotlin.math.Direction
 import com.lillicoder.adventofcode.kotlin.math.Vertex
 import com.lillicoder.adventofcode.kotlin.math.to
+import com.lillicoder.adventofcode.kotlin.text.normalizeLineSeparators
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -205,21 +206,13 @@ internal class SquareLatticeGraphTest {
 
     @Test
     fun `toString matches expected format`() {
-        val lineSeparatorPattern = "\\n|\\r\\n".toRegex() // Ensure consistent line separators regardless of platform
         val expected =
             """
             123
             456
             789
-            """.trimIndent().replace(
-                lineSeparatorPattern,
-                System.lineSeparator(),
-            )
-        val actual =
-            graph.toString().replace(
-                lineSeparatorPattern,
-                System.lineSeparator(),
-            )
+            """.trimIndent().normalizeLineSeparators()
+        val actual = graph.toString().normalizeLineSeparators()
         assertEquals(expected, actual)
     }
 

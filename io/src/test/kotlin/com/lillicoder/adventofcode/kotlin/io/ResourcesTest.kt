@@ -1,5 +1,6 @@
 package com.lillicoder.adventofcode.kotlin.io
 
+import com.lillicoder.adventofcode.kotlin.text.normalizeLineSeparators
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -50,24 +51,17 @@ internal class ResourcesTest {
 
     @Test
     fun `Reading resource as text matches expected`() {
-        val lineSeparatorPattern = "\\n|\\r\\n".toRegex() // Ensure consistent line separators regardless of platform
         val expected =
             """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
             aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
             Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
             occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            """.trimIndent().replace(
-                lineSeparatorPattern,
-                System.lineSeparator(),
-            )
+            """.trimIndent().normalizeLineSeparators()
         val actual =
             Resources.text(
                 "test.txt",
-            )?.replace(
-                lineSeparatorPattern,
-                System.lineSeparator(),
-            )
+            )?.normalizeLineSeparators()
         assertEquals(expected, actual)
     }
 

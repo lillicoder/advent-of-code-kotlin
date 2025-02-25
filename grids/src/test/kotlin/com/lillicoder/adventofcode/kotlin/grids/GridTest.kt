@@ -19,6 +19,7 @@ package com.lillicoder.adventofcode.kotlin.grids
 import com.lillicoder.adventofcode.kotlin.math.Direction
 import com.lillicoder.adventofcode.kotlin.math.Vertex
 import com.lillicoder.adventofcode.kotlin.math.to
+import com.lillicoder.adventofcode.kotlin.text.normalizeLineSeparators
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -339,16 +340,12 @@ internal abstract class GridTest(
 
     @Test
     fun `toString matches expected format`() {
-        val lineSeparatorPattern = "\\n|\\r\\n".toRegex() // Ensure consistent line separators regardless of platform
         val expected =
             """
             123
             456
             789
-            """.trimIndent().replace(
-                lineSeparatorPattern,
-                System.lineSeparator(),
-            )
+            """.trimIndent().normalizeLineSeparators()
         val actual = grid.toString()
         assertEquals(expected, actual)
     }
