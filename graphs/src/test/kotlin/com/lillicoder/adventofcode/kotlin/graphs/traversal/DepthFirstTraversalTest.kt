@@ -43,6 +43,16 @@ internal class DepthFirstTraversalTest {
     }
 
     @Test
+    fun `Path with no destination gives all vertices in visited order`() {
+        val start = graph.find { it.value == "1" }!!
+
+        val expected = listOf("1", "3", "7", "6", "2", "5", "8", "4")
+        val actual = traversal.path(start).map { it.value }
+
+        assertContentEquals(expected, actual)
+    }
+
+    @Test
     fun `Path for unconnected vertices is empty`() {
         val expected = emptyList<Vertex<String>>()
 

@@ -20,17 +20,18 @@ import com.lillicoder.adventofcode.kotlin.graphs.Graph
 import com.lillicoder.adventofcode.kotlin.math.Vertex
 
 /**
- * Represents a method of traversal for a [Graph].
+ * A traversal method for a [Graph].
  */
 interface Traversal<T> {
     /**
      * Gets the path from the given start [Vertex]
-     * to the given destination vertex.
-     * @param destination Destination.
-     * @return Path taken or an empty list if there is no path between the given vertices.
+     * @param start Start vertex.
+     * @param destination Optional destination vertex. If null, all vertices
+     * will be visited.
+     * @return Path taken.
      */
     fun path(
         start: Vertex<T>,
-        destination: Vertex<T>,
+        destination: Vertex<T>? = null,
     ): List<Vertex<T>>
 }

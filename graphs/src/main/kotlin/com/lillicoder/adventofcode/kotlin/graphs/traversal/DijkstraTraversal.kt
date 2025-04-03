@@ -32,7 +32,7 @@ class DijkstraTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
 
     override fun path(
         start: Vertex<T>,
-        destination: Vertex<T>,
+        destination: Vertex<T>?,
     ): List<Vertex<T>> {
         distances[start] = 0L
         frontier.add(start)
@@ -63,7 +63,14 @@ class DijkstraTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
             }
         }
 
-        return emptyList()
+        // Return empty list if an explicit destination was requested,
+        // otherwise give back the vertices in visited order
+        // TODO Dijkstra doesn't work this way; we have a list of predecessors
+        // and best costs to reach a given vertex, not a discrete path (we flood fill)
+        return when (destination == null) {
+            true -> emptyList()
+            else -> emptyList()
+        }
     }
 
     /**

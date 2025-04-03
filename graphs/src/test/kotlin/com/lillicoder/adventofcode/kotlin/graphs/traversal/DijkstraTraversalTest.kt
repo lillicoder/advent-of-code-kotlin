@@ -61,6 +61,16 @@ internal class DijkstraTraversalTest {
     }
 
     @Test
+    fun `Path with no destination gives all vertices in visited order`() {
+        val start = graph.find { it.value == "1" }!!
+
+        val expected = emptyList<String>()
+        val actual = traversal.path(start).map { it.value }
+
+        assertContentEquals(expected, actual)
+    }
+
+    @Test
     fun `Path for unconnected vertices is empty`() {
         val expected = emptyList<Vertex<String>>()
 

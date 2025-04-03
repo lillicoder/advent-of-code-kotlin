@@ -29,7 +29,7 @@ class BreadthFirstTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
 
     override fun path(
         start: Vertex<T>,
-        destination: Vertex<T>,
+        destination: Vertex<T>?,
     ): List<Vertex<T>> {
         queue.add(start)
         visited[start] = null
@@ -46,7 +46,12 @@ class BreadthFirstTraversal<T>(private val graph: Graph<T>) : Traversal<T> {
             }
         }
 
-        return emptyList()
+        // Return empty list if an explicit destination was requested,
+        // otherwise give back the vertices in visited order
+        return when (destination == null) {
+            true -> visited.keys.toList()
+            else -> emptyList()
+        }
     }
 
     /**
