@@ -30,6 +30,47 @@ internal class AdjacencyListGraphTest {
             edge(source = 4, destination = 5)
             edge(source = 5, destination = 6)
         }
+    private val directedGraph =
+        graph {
+            vertex("1")
+            vertex("2")
+            vertex("3")
+            vertex("4")
+            vertex("5")
+            vertex("6")
+            vertex("7")
+
+            edge("1", "2") {
+                directed()
+            }
+            edge("1", "3") {
+                directed()
+            }
+            edge("1", "6") {
+                directed()
+            }
+            edge("2", "3") {
+                directed()
+            }
+            edge("2", "4") {
+                directed()
+            }
+            edge("3", "1") {
+                directed()
+            }
+            edge("3", "4") {
+                directed()
+            }
+            edge("3", "6") {
+                directed()
+            }
+            edge("4", "5") {
+                directed()
+            }
+            edge("5", "6") {
+                directed()
+            }
+        }
     private val emptyGraph = graph<Nothing> {}
 
     @Test
@@ -147,6 +188,18 @@ internal class AdjacencyListGraphTest {
                 graph.vertex(0L)!!,
             ).map {
                 it.id
+            }
+        assertContentEquals(expected, actual)
+    }
+
+    @Test
+    fun `Neighbors for a vertex with directed edges only includes expected vertices`() {
+        val expected = listOf("2", "3", "6")
+        val actual =
+            directedGraph.neighbors(
+                directedGraph.vertex(0L)!!,
+            ).map {
+                it.value
             }
         assertContentEquals(expected, actual)
     }

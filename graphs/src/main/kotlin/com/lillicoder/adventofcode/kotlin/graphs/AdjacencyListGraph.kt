@@ -42,8 +42,11 @@ class AdjacencyListGraph<T>(
     }
 
     override fun neighbors(vertex: Vertex<T>) =
-        vertices[vertex]?.map {
-            if (vertex == it.source) it.destination else it.source
+        vertices[vertex]?.mapNotNull {
+            when (vertex == it.source) {
+                true -> it.destination
+                else -> if (it.isDirected) null else it.source
+            }
         }?.toSet() ?: setOf()
 
     override fun root() = vertices.keys.firstOrNull()
